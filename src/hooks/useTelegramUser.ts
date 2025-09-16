@@ -10,13 +10,22 @@ type TelegramUser = {
   language_code?: string
 }
 
+type TelegramInitDataUnsafe = {
+  user?: TelegramUser
+}
+
+type TelegramWebApp = {
+  ready?: () => void
+  initDataUnsafe?: TelegramInitDataUnsafe
+}
+
 export function useTelegramUser() {
   const [user, setUser] = useState<TelegramUser | null>(null)
   const [isTelegram, setIsTelegram] = useState<boolean>(false)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const tg = (window as any)?.Telegram?.WebApp
+    const tg = (globalThis as unknown as { Telegram?: { WebApp?: TelegramWebApp } }).Telegram?.WebApp
     setIsTelegram(Boolean(tg))
     try {
       tg?.ready?.()
