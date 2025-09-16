@@ -1,23 +1,23 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+// import { useEffect } from 'react'
+// import { useRouter } from 'next/navigation'
 import { useTelegramUser } from '@/hooks/useTelegramUser'
 import Image from 'next/image'
 
 export default function LoginPage() {
-  const router = useRouter()
+  // const router = useRouter()
   const { isAuthenticated, isTelegram, user } = useTelegramUser()
 
-  useEffect(() => {
-    if (isTelegram) {
-      router.replace('/me')
-      return
-    }
-    if (isAuthenticated) {
-      router.replace('/')
-    }
-  }, [isTelegram, isAuthenticated, router])
+  // useEffect(() => {
+  //   if (isTelegram) {
+  //     router.replace('/me')
+  //     return
+  //   }
+  //   if (isAuthenticated) {
+  //     router.replace('/')
+  //   }
+  // }, [isTelegram, isAuthenticated, router])
 
   if (isAuthenticated) return null
 
