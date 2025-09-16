@@ -11,6 +11,10 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  direction: rtl;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
