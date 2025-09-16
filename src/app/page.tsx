@@ -1,3 +1,5 @@
+'use client'
+
 // import { cookieStorage, createStorage, http } from '@wagmi/core'
 import { ConnectButton } from "@/components/ConnectButton";
 import { InfoList } from "@/components/InfoList";
@@ -6,7 +8,7 @@ import Image from 'next/image';
 import ClientGate from '@/components/ClientGate'
 import { useTelegramUser } from '@/hooks/useTelegramUser'
 
-export default async function Home() {
+export default function Home() {
   // Simulate work to show the global loading UI
   // await new Promise((r) => setTimeout(r, 1500));
   const { user } = useTelegramUser()
