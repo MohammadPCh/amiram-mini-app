@@ -7,17 +7,17 @@ import Image from 'next/image'
 
 export default function LoginPage() {
   const router = useRouter()
-  const { isAuthenticated, isTelegram } = useTelegramUser()
+  const { isAuthenticated, isTelegram, user } = useTelegramUser()
 
   useEffect(() => {
-    if (isAuthenticated && isTelegram) {
+    if (isTelegram) {
       router.replace('/me')
       return
     }
     if (isAuthenticated) {
       router.replace('/')
     }
-  }, [isAuthenticated, isTelegram, router])
+  }, [isTelegram, isAuthenticated, router])
 
   if (isAuthenticated) return null
 
@@ -68,6 +68,9 @@ export default function LoginPage() {
               {!isTelegram && (
                 <p className="text-center text-xs opacity-70 mt-2">اگر داخل تلگرام نیستی، روی دکمه بالا بزن تا اپ باز بشه.</p>
               )}
+            </div>
+            <div>
+            user: {user?.first_name} {user?.last_name} {user?.username} {user?.language_code}
             </div>
           </div>
         </div>
