@@ -20,10 +20,14 @@ export default async function RootLayout({
   const cookies = headersData.get('cookie');
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <Script src="https://telegram.org/js/telegram-web-app.js?59" strategy="beforeInteractive" />
-        <ContextProvider cookies={cookies}>{children}</ContextProvider>
+        <Script src="https://telegram.org/js/telegram-web-app.js?59" strategy="afterInteractive" />
+        <ContextProvider cookies={cookies}>
+          <div className="min-h-dvh p-6 bg-[#0C0E12]">
+            {children}
+          </div>
+        </ContextProvider>
       </body>
     </html>
   );
