@@ -31,14 +31,18 @@ export default function Home() {
     //     <InfoList />
     //   </div>
     // // </ClientGate>
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
       <div className="p-2 flex gap-2 items-center">
-      <div className="flex flex-1">
-        {/* Telegram Profile Picture */}
-        <Image src={user?.photo_url || '/images/face-man.svg'} alt="Telegram Profile Picture" width={100} height={100} />
+        <div className="bg-primary text-white px-4 py-2 rounded-2xl">
+          اتصال به کیف پول
+        </div>
+        <div className="flex flex-1 gap-2 justify-end">
+          {/* Telegram Profile Picture */}
+          <p className="text-lg font-bold">{user?.username}</p>
+          <Image src={user?.photo_url || '/images/face-man.svg'} alt="Telegram Profile Picture" width={36} height={36} className="rounded-2xl" />
+        </div>
       </div>
-
-      </div>
+      <div className="border-primary border-2 rounded-2xl p-2">hi</div>
       <div className="p-2">
         <h1>AppKit Wagmi Next.js App Router Example</h1>
         user: {user?.first_name} {user?.last_name} {user?.username} {user?.language_code}
