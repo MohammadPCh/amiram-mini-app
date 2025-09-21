@@ -78,7 +78,7 @@ html {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'IRANSansXV';
+  font-family: var(--font-iransans), 'IRANSansXV', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -92,4 +92,13 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Font utility classes */
+.font-iransans {
+  font-family: var(--font-iransans), 'IRANSansXV', sans-serif;
+}
+
+.font-kalame {
+  font-family: var(--font-kalame), sans-serif;
 }
