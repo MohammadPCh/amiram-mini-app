@@ -8,6 +8,7 @@ type TelegramUser = {
   last_name?: string
   username?: string
   language_code?: string
+  photo_url?: string
 }
 
 type TelegramInitDataUnsafe = {
@@ -56,6 +57,15 @@ export function useTelegramUser() {
         }
       }
     }
+
+    // // Extract photo_url from Telegram WebApp
+    // if (u && tg?.initDataUnsafe) {
+    //   const initData = tg.initDataUnsafe
+    //   if (initData.user?.photo_url) {
+    //     u.photo_url = initData.user.photo_url
+    //   }
+    // }
+
 
     setUser(u ?? null)
   }, [])
