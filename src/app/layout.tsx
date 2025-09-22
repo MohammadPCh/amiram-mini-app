@@ -24,7 +24,7 @@ export default async function RootLayout({
       <body className={`${iransans.variable} ${kalame.variable}`} suppressHydrationWarning>
         <Script src="https://telegram.org/js/telegram-web-app.js?59" strategy="afterInteractive" />
         <ContextProvider cookies={cookies}>
-          <div className="min-h-dvh p-6 bg-[#0C0E12]">
+          <div className="min-h-dvh p-6 bg-primary-content pt-16">
             {children}
           </div>
         </ContextProvider>
