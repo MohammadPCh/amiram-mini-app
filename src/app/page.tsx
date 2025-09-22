@@ -1,18 +1,14 @@
 'use client'
 
+import { AppBar } from '@/components/AppBar';
 // import { cookieStorage, createStorage, http } from '@wagmi/core'
-import { ConnectButton } from "@/components/ConnectButton";
-import { InfoList } from "@/components/InfoList";
-import { ActionButtonList } from "@/components/ActionButtonList";
-import Image from 'next/image';
+
 import ClientGate from '@/components/ClientGate'
-import { useTelegramUser } from '@/hooks/useTelegramUser'
 
 export default function Home() {
   // Simulate work to show the global loading UI
   // await new Promise((r) => setTimeout(r, 1500));
-  const { user } = useTelegramUser()
-  console.log(user)
+
 
 
   return (
@@ -32,20 +28,11 @@ export default function Home() {
     //   </div>
     // // </ClientGate>
     <div className="flex flex-col gap-4">
-      <div className="p-2 flex gap-2 items-center">
-        <div className="bg-primary text-white px-4 py-2 rounded-2xl">
-          اتصال به کیف پول
-        </div>
-        <div className="flex flex-1 gap-2 justify-end">
-          {/* Telegram Profile Picture */}
-          <p className="text-lg font-bold">{user?.username}</p>
-          <Image src={user?.photo_url || '/images/face-man.svg'} alt="Telegram Profile Picture" width={36} height={36} className="rounded-2xl" />
-        </div>
-      </div>
+      <AppBar />
       <div className="border-primary border-2 rounded-2xl p-2">hi</div>
       <div className="p-2">
         <h1>AppKit Wagmi Next.js App Router Example</h1>
-        user: {user?.first_name} {user?.last_name} {user?.username} {user?.language_code}
+        {/* user: {user?.first_name} {user?.last_name} {user?.username} {user?.language_code} */}
       </div>
     </div>
   );
