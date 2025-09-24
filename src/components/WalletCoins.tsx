@@ -15,7 +15,7 @@ export const WalletCoins = () => {
     >
       <div className="py-2 px-2.5 flex gap-2 items-center justify-center">
         <Image src="/images/coins/usdt.svg" alt="Coin" width={32} height={32} />
-        <div className="text-5xl font-extrabold font-kalame text-[#50AF95]">
+        <div className="text-5xl font-extrabold font-kalame text-[#50AF95] pt-1">
           1.000
         </div>
       </div>
