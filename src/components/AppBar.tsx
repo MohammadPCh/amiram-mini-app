@@ -14,9 +14,7 @@ export const AppBar = () => {
   return (
     <div className="py-2.5 px-4">
       <div className="p-2 flex gap-2 items-center border-2 border-base-300 rounded-2xl bg-base-100">
-        <div className="bg-primary text-white px-4 py-2 rounded-2xl text-sm">
-          اتصال به کیف پول
-        </div>
+        <ConnectButton />
         <div className="flex flex-1 gap-2 justify-end items-center">
           {/* Telegram Profile Picture */}
           <p className="text-xs font-bold">{user?.username}</p>
