@@ -29,7 +29,6 @@ export default function Home() {
     //   </div>
     // // </ClientGate>
     <div className="flex flex-col gap-4">
-      <AppBar />
       <WalletCoins />
       <div className="border-base-300 bg-base-200 border-2 rounded-2xl p-4 flex flex-col gap-4">
         <div className="text-2xl font-bold pb-4 border-primary border-b-2 text-center">

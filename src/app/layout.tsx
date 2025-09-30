@@ -5,6 +5,7 @@ import './globals.css';
 import ContextProvider from '@/context'
 import Script from 'next/script'
 import { iransans, kalame } from '@/lib/fonts'
+import { AppBar } from "@/components/AppBar";
 
 export const metadata: Metadata = {
   title: "AppKit in Next.js + wagmi",
@@ -25,6 +26,7 @@ export default async function RootLayout({
         <Script src="https://telegram.org/js/telegram-web-app.js?59" strategy="afterInteractive" />
         <ContextProvider cookies={cookies}>
           <div className="min-h-dvh p-6 bg-primary-content pt-16">
+            <AppBar />
             {children}
           </div>
         </ContextProvider>
