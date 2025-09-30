@@ -1,5 +1,6 @@
 import React from 'react'
 import Image from "next/image";
+import Link from 'next/link';
 
 export const Task = () => {
     return (
@@ -26,9 +27,11 @@ export const Task = () => {
                     بفرست.
                 </div>
                 <div className="flex gap-2 items-center">
+                    <Link href="/friends">
                     <button className="flex-1 rounded-lg bg-primary py-1.5 px-3 text-primary-content">
                         ارسال لینک دعوت
                     </button>
+                    </Link>
                     <div className="flex items-center">
                         <Image
                             src="/images/spark1.png"
