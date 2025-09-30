@@ -5,6 +5,7 @@ import { AppBar } from "@/components/AppBar";
 
 import ClientGate from "@/components/ClientGate";
 import { WalletCoins } from "@/components/WalletCoins";
+import { WheelBanner } from "@/components/WheelBanner";
 import Image from "next/image";
 
 export default function Home() {
@@ -68,6 +69,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <WheelBanner />
       </div>
       <div className="p-2">
         <h1>AppKit Wagmi Next.js App Router Example</h1>
