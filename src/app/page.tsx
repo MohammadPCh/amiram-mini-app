@@ -29,34 +29,36 @@ export default function Home() {
     //     <InfoList />
     //   </div>
     // // </ClientGate>
-    <div className="flex flex-col gap-4">
-      <WalletCoins />
-      <div className="border-base-300 bg-base-200 border-2 rounded-2xl p-4 flex flex-col gap-4">
-        <div className="text-2xl font-bold pb-4 border-primary border-b-2 text-center">
-          ماموریت بیت
+    <ClientGate>
+      <div className="flex flex-col gap-4">
+        <WalletCoins />
+        <div className="border-base-300 bg-base-200 border-2 rounded-2xl p-4 flex flex-col gap-4">
+          <div className="text-2xl font-bold pb-4 border-primary border-b-2 text-center">
+            ماموریت بیت
+          </div>
+          <Task />
+          <WheelBanner />
+          <div className="flex justify-center py-2">
+            <SpinWheel
+              segments={[
+                { label: "1 USDT" },
+                { label: "5 USDT" },
+                { label: "10 USDT" },
+                { label: "15 USDT" },
+                // { label: "10 USDT" },
+                // { label: "10 USDT" },
+                // { label: "1 USDT" },
+                // { label: "10 USDT" },
+              ]}
+              getTargetIndex={() => 1}
+            />
+          </div>
         </div>
-        <Task />
-        <WheelBanner />
-        <div className="flex justify-center py-2">
-          <SpinWheel
-            segments={[
-              { label: "1 USDT" },
-              { label: "5 USDT" },
-              { label: "10 USDT" },
-              { label: "15 USDT" },
-              // { label: "10 USDT" },
-              // { label: "10 USDT" },
-              // { label: "1 USDT" },
-              // { label: "10 USDT" },
-            ]}
-            getTargetIndex={() => 1}
-          />
+        <div className="p-2">
+          <h1>AppKit Wagmi Next.js App Router Example</h1>
+          {/* user: {user?.first_name} {user?.last_name} {user?.username} {user?.language_code} */}
         </div>
       </div>
-      <div className="p-2">
-        <h1>AppKit Wagmi Next.js App Router Example</h1>
-        {/* user: {user?.first_name} {user?.last_name} {user?.username} {user?.language_code} */}
-      </div>
-    </div>
+    </ClientGate>
   );
 }
