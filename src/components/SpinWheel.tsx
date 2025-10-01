@@ -166,7 +166,7 @@ export const SpinWheel: React.FC<SpinWheelProps> = ({
         userSelect: "none",
       }}
     >
-      {/* Pointer */}
+      {/* Pointer (rounded triangle via SVG) */}
       <div
         aria-hidden
         style={{
@@ -174,15 +174,27 @@ export const SpinWheel: React.FC<SpinWheelProps> = ({
           zIndex: 3,
           left: "50%",
           top: 0,
-          transform: "translateX(-50%)",
-          width: 0,
-          height: 0,
-          borderLeft: "10px solid transparent",
-          borderRight: "10px solid transparent",
-          borderBottom: "18px solid #F5CF31",
-          filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))",
+          transform: "translate(-50%, 50%)",
         }}
-      />
+      >
+        {(() => {
+          const pointerWidth = 35;
+          const pointerHeight = 30;
+          const strokeW =4;
+          const fill = "#F5CF31";
+          return (
+            <svg width={pointerWidth} height={pointerHeight} viewBox={`0 0 ${pointerWidth} ${pointerHeight}`}>
+              <polygon
+                points={`2,2 ${pointerWidth-2},2 ${pointerWidth / 2},${pointerHeight-2}`}
+                fill={fill}
+                stroke={fill}
+                strokeWidth={strokeW}
+                strokeLinejoin="round"
+              />
+            </svg>
+          );
+        })()}
+      </div>
 
       {/* Wheel clickable area */}
       <button
