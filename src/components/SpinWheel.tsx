@@ -92,7 +92,6 @@ export const SpinWheel: React.FC<SpinWheelProps> = ({
     if (wheelRef.current) {
       wheelRef.current.style.transition = `transform ${durationForward}ms cubic-bezier(0.22, 1, 0.36, 1)`;
       // Force reflow
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       wheelRef.current.offsetHeight;
     }
     setRotation(nextRotationOvershoot);
@@ -101,7 +100,6 @@ export const SpinWheel: React.FC<SpinWheelProps> = ({
     window.setTimeout(() => {
       if (wheelRef.current) {
         wheelRef.current.style.transition = `transform ${durationBack}ms linear`;
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         wheelRef.current.offsetHeight;
       }
       const deltaFinal = absoluteFinal - currentRotationMod;
