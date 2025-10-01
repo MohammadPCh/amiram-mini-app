@@ -241,7 +241,22 @@ export const SpinWheel: React.FC<SpinWheelProps> = ({
               background: "#F5CF31",
               boxShadow: "0 6px 10px rgba(0,0,0,0.25)",
             }}
-          />
+          >
+            <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              width: Math.floor(size * 0.09),
+              height: Math.floor(size * 0.09),
+              borderRadius: "9999px",
+              background: "#F5CF31",
+              boxShadow: "0 6px 10px rgba(0,0,0,0.25)",
+            }}
+            />
+          </div>
         </div>
       </button>
     </div>
