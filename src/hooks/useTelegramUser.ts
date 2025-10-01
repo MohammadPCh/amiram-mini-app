@@ -23,6 +23,7 @@ type TelegramWebApp = {
 export function useTelegramUser() {
   const [user, setUser] = useState<TelegramUser | null>(null)
   const [isTelegram, setIsTelegram] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -42,6 +43,13 @@ export function useTelegramUser() {
       const byUA = /Telegram/i.test(ua)
       const detectedTelegram = byObject || byQuery || byUA
       setIsTelegram(detectedTelegram)
+
+      // If not in Telegram environment at all, stop loading immediately
+      if (!detectedTelegram) {
+        setUser(null)
+        setLoading(false)
+        return true
+      }
 
       // If the Telegram object isn't ready yet, keep waiting
       if (!byObject && !byQuery && attempts < maxAttempts) {
@@ -87,12 +95,16 @@ export function useTelegramUser() {
         if (finished && intervalId) {
           clearInterval(intervalId)
           intervalId = null
+          setLoading(false)
         }
         if (attempts >= maxAttempts && intervalId) {
           clearInterval(intervalId)
           intervalId = null
+          setLoading(false)
         }
       }, intervalMs)
+    } else {
+      setLoading(false)
     }
 
     return () => {
@@ -102,7 +114,7 @@ export function useTelegramUser() {
 
   const isAuthenticated = useMemo(() => Boolean(user?.id), [user])
 
-  return { user, isAuthenticated, isTelegram }
+  return { user, isAuthenticated, isTelegram, loading }
 }
 
 
