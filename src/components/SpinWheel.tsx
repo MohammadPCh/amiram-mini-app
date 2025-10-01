@@ -66,9 +66,13 @@ export const SpinWheel: React.FC<SpinWheelProps> = ({
     targetIndex = Math.abs(Math.trunc(targetIndex)) % segments.length;
 
     const spins = 5 + Math.floor(Math.random() * 3); // 5-7 full spins
-    const targetCenter = targetIndex * segmentAngle + segmentAngle / 2;
+    // Choose a target angle within the slice, not exactly at the center
+    const edgePadding = Math.min(12, segmentAngle * 0.25); // avoid stopping too close to borders
+    const sliceStart = targetIndex * segmentAngle + edgePadding;
+    const sliceEnd = (targetIndex + 1) * segmentAngle - edgePadding;
+    const targetAngle = sliceStart + Math.random() * Math.max(0, sliceEnd - sliceStart);
     const currentRotationMod = ((rotation % 360) + 360) % 360;
-    const absoluteTarget = spins * 360 + (360 - targetCenter);
+    const absoluteTarget = spins * 360 + (360 - targetAngle);
     const delta = absoluteTarget - currentRotationMod;
     const nextRotation = rotation + delta;
 
