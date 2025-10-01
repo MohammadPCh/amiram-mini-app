@@ -8,7 +8,7 @@ export const ConnectButton = () => {
   const { isConnected } = useAppKitAccount();
   const { walletInfo } = useWalletInfo();
   return isConnected ? (
-    <div className=" text-white px-4 py-2 rounded-2xl text-sm" onClick={() => open()}>
+    <div className=" text-white px-4 py-2 rounded-2xl text-sm cursor-pointer" onClick={() => open()}>
       {/* Show connector name and avatar */}
       <div className="flex items-center gap-2">
         <Image src={walletInfo?.icon || "/images/face-man.svg"} alt="avatar" width={24} height={24} />
@@ -16,7 +16,7 @@ export const ConnectButton = () => {
       </div>
     </div>
   ) : (
-    <div className="bg-primary text-white px-4 py-2 rounded-2xl text-sm" onClick={() => open()}>
+    <div className="bg-primary text-white px-4 py-2 rounded-2xl text-sm cursor-pointer" onClick={() => open()}>
       اتصال به کیف پول
     </div>
   )
