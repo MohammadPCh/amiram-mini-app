@@ -71,24 +71,48 @@ export const SpinWheel: React.FC<SpinWheelProps> = ({
     const sliceStart = targetIndex * segmentAngle + edgePadding;
     const sliceEnd = (targetIndex + 1) * segmentAngle - edgePadding;
     const targetAngle = sliceStart + Math.random() * Math.max(0, sliceEnd - sliceStart);
-    const currentRotationMod = ((rotation % 360) + 360) % 360;
-    const absoluteTarget = spins * 360 + (360 - targetAngle);
-    const delta = absoluteTarget - currentRotationMod;
-    const nextRotation = rotation + delta;
 
-    // Apply rotation with transition
+    const currentRotationMod = ((rotation % 360) + 360) % 360;
+    const absoluteFinal = spins * 360 + (360 - targetAngle);
+
+    // Add a very small overshoot then bounce back (target ~0–1°)
+    const desiredOvershoot = Math.random() / 2; // 0..1 deg
+    const maxSafe = Math.max(0.6, edgePadding - 0.5);
+    const overshootDeg = Math.min(desiredOvershoot, maxSafe);
+    const absoluteOvershoot = absoluteFinal + overshootDeg;
+
+    // Slow, small reverse phase: clamp to 150–220ms
+    const durationBack = Math.max(150, Math.min(220, Math.floor(durationMs * 0.03)));
+    const durationForward = Math.max(0, durationMs - durationBack);
+
+    const deltaOvershoot = absoluteOvershoot - currentRotationMod;
+    const nextRotationOvershoot = rotation + deltaOvershoot;
+
+    // Phase 1: spin forward to overshoot
     if (wheelRef.current) {
-      wheelRef.current.style.transition = `transform ${durationMs}ms cubic-bezier(0.17, 0.99, 0.34, 1)`;
-      // Force reflow to ensure transition applies when spinning repeatedly
+      wheelRef.current.style.transition = `transform ${durationForward}ms cubic-bezier(0.22, 1, 0.36, 1)`;
+      // Force reflow
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       wheelRef.current.offsetHeight;
     }
-    setRotation(nextRotation);
+    setRotation(nextRotationOvershoot);
 
+    // Phase 2: bounce back to final target
     window.setTimeout(() => {
-      setIsSpinning(false);
-      onSpinEnd?.(targetIndex, segments[targetIndex]);
-    }, durationMs + 30);
+      if (wheelRef.current) {
+        wheelRef.current.style.transition = `transform ${durationBack}ms linear`;
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        wheelRef.current.offsetHeight;
+      }
+      const deltaFinal = absoluteFinal - currentRotationMod;
+      const nextRotationFinal = rotation + deltaFinal;
+      setRotation(nextRotationFinal);
+
+      window.setTimeout(() => {
+        setIsSpinning(false);
+        onSpinEnd?.(targetIndex, segments[targetIndex]);
+      }, durationBack + 30);
+    }, durationForward + 10);
   }, [isSpinning, disabled, segments, getTargetIndex, segmentAngle, rotation, durationMs, onSpinEnd]);
 
   const labelNodes = useMemo(() => {
