@@ -46,6 +46,11 @@ export const SpinWheel: React.FC<SpinWheelProps> = ({
   const segmentAngle = useMemo(() => (segments.length > 0 ? 360 / segments.length : 0), [segments.length]);
   const background = useMemo(() => buildConicGradient(segments), [segments]);
 
+  // Rotation offset so that label index 0 aligns to the top pointer when rotation=0
+  const zeroAlignOffset = useMemo(() => {
+    return segments.length > 0 ? 0 : 0;
+  }, [segments.length]);
+
   const handleSpin = useCallback(async () => {
     if (isSpinning || disabled || segments.length === 0) return;
     setIsSpinning(true);
@@ -85,31 +90,44 @@ export const SpinWheel: React.FC<SpinWheelProps> = ({
   const labelNodes = useMemo(() => {
     const radius = size * 0.36;
     return segments.map((seg, i) => {
-      const angle = i * segmentAngle + segmentAngle / 2;
-      return (
-        <div
-          key={`${seg.label}-${i}`}
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: "50%",
-            transform: `rotate(${angle}deg) translateY(-${radius}px) rotate(${-angle}deg)`,
-            transformOrigin: "center",
-            pointerEvents: "none",
-            color: i % 2 === 0 ? "#F8F8F8" : "#1C2737",
-            fontWeight: 800,
-            fontFamily: "var(--font-kalame), sans-serif",
-            textAlign: "center",
-            whiteSpace: "nowrap",
-            fontSize: Math.max(12, Math.floor(size * 0.06)),
-            filter: "drop-shadow(0 1px 0 rgba(0,0,0,0.25))",
-          }}
-        >
-          {seg.label}
-        </div>
-      );
+      // Align first label to 45° when n=4, i.e., shift by one slice relative to start at -90°
+      const n = Math.max(1, segments.length);
+      const sliceIndex = (i + 1) % n;
+      const angle = (360 / n) / 2 - 90 + sliceIndex * (360 / n);
+      // Pick text color opposite the background for this slice index
+      const labelColor = sliceIndex % 2 === 0 ? "#F8F8F8" : "#1C2737";
+          return (
+            <div
+              key={`${seg.label}-${i}`}
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-${radius/1.4}px)`,
+                transformOrigin: "center",
+                pointerEvents: "none",
+              }}
+            >
+              <span
+                style={{
+                  display: "inline-block",
+                  transform: "rotate(-90deg)",
+                  color: labelColor,
+                  fontWeight: 800,
+                  fontFamily: "var(--font-kalame), sans-serif",
+                  textAlign: "center",
+                  whiteSpace: "nowrap",
+                  fontSize: Math.max(24, Math.floor(size * 0.06)),
+                  filter: "drop-shadow(0 1px 0 rgba(0,0,0,0.25))",
+                  direction: "ltr",
+                }}
+              >
+                {seg.label}
+              </span>
+            </div>
+          );
     });
-  }, [segments, segmentAngle, size]);
+  }, [segments, size]);
 
   return (
     <div
@@ -163,7 +181,7 @@ export const SpinWheel: React.FC<SpinWheelProps> = ({
             height: size,
             borderRadius: "9999px",
             background,
-            transform: `rotate(${rotation}deg)`,
+            transform: `rotate(${rotation + zeroAlignOffset}deg)`,
             boxShadow: "inset 0 0 0 10px #F5CF31, 0 8px 18px rgba(0,0,0,0.35)",
             position: "relative",
           }}
