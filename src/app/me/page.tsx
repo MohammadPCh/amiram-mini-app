@@ -3,10 +3,12 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTelegramUser } from '@/hooks/useTelegramUser'
+import { useWalletInfo } from '@reown/appkit/react'
 
 export default function MePage() {
   const { user, isAuthenticated, isTelegram } = useTelegramUser()
   const router = useRouter()
+  const { walletInfo } = useWalletInfo();
 
   useEffect(() => {
     if (!isTelegram) {
@@ -15,6 +17,7 @@ export default function MePage() {
   }, [isTelegram, router])
 
   if (!isTelegram) return null
+  
 
   return (
     <div className="min-h-dvh w-full flex items-center justify-center bg-[#0b0f14] text-white p-6">
@@ -27,6 +30,7 @@ export default function MePage() {
             {user?.last_name && <p>نام خانوادگی: {user.last_name}</p>}
             {user?.username && <p>نام کاربری: @{user.username}</p>}
             {user?.language_code && <p>زبان: {user.language_code}</p>}
+            {JSON.stringify(walletInfo)}
           </div>
         ) : (
           <p className="opacity-80">در انتظار دریافت اطلاعات کاربر...</p>

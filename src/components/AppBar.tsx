@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useTelegramUser } from "@/hooks/useTelegramUser";
 import Levels, { Level } from "@/components/ui/LevelCard";
 import LevelCard from "@/components/ui/LevelCard";
+import Link from "next/link";
 
 export const AppBar = () => {
   const { user, loading, isTelegram } = useTelegramUser();
@@ -23,7 +24,7 @@ export const AppBar = () => {
               <div className="h-9 w-9 rounded-2xl bg-base-200 animate-pulse" />
             </>
           ) : (
-            <>
+            <Link href="/me">
               <p className="text-xs font-bold">{user?.username}</p>
               <Image
                 src={user?.photo_url || "/images/face-man.svg"}
@@ -32,7 +33,7 @@ export const AppBar = () => {
                 height={36}
                 className="rounded-2xl"
               />
-            </>
+            </Link>
           )}
         </div>
       </div>
