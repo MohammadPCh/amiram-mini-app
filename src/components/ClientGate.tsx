@@ -11,7 +11,7 @@ const VISITED_STORAGE_KEY = 'app_has_visited'
 export default function ClientGate({ children }: { children: React.ReactNode }) {
   const mounted = useClientMounted()
   // const { isConnected } = useAppKitAccount()
-  const { isAuthenticated } = useTelegramUser()
+  const { isAuthenticated, isTelegram } = useTelegramUser()
   const router = useRouter()
   const pathname = usePathname()
   // const [hasVisited, setHasVisited] = useState<boolean>(false)
@@ -36,6 +36,17 @@ export default function ClientGate({ children }: { children: React.ReactNode }) 
       router.replace('/login')
     }
   }, [mounted, shouldRedirectToLogin, router])
+
+  // Telegram UI adjustments: ready, expand, hide back button, confirm on close
+  useEffect(() => {
+    if (!mounted || !isTelegram) return
+    const tg = (globalThis as unknown as { Telegram?: { WebApp?: any } }).Telegram?.WebApp
+    if (!tg) return
+    try { tg.ready?.() } catch {}
+    try { tg.expand?.() } catch {}
+    try { tg.BackButton?.hide?.() } catch {}
+    try { tg.enableClosingConfirmation?.() } catch {}
+  }, [mounted, isTelegram])
   if (!mounted) return null
   if (shouldRedirectToLogin) return null
 
