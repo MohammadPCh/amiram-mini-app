@@ -26,12 +26,12 @@ export const AppBar = () => {
           ) : (
             <Link href="/me">
               <p className="text-xs font-bold">{user?.username}</p>
-              <Image
+              <img
                 src={user?.photo_url || "/images/face-man.svg"}
                 alt="Telegram Profile Picture"
                 width={36}
                 height={36}
-                className="rounded-2xl"
+                className="rounded-2xl w-9 h-9"
               />
             </Link>
           )}
