@@ -32,6 +32,7 @@ export function useTelegramUser() {
     const maxAttempts = 50 // ~10s total with 200ms interval
     const intervalMs = 200
     let intervalId: ReturnType<typeof setInterval> | null = null
+		let sdkScriptEl: HTMLScriptElement | null = null
 
     const resolveAndSetUser = () => {
       const tg = (globalThis as unknown as { Telegram?: { WebApp?: TelegramWebApp } }).Telegram?.WebApp
@@ -44,8 +45,13 @@ export function useTelegramUser() {
       const detectedTelegram = byObject || byQuery || byUA
       setIsTelegram(detectedTelegram)
 
-      // If not in Telegram environment at all, stop loading immediately
+      // If Telegram not detected yet, keep polling silently (no skeleton shown since isTelegram=false)
       if (!detectedTelegram) {
+        if (attempts < maxAttempts) {
+          attempts += 1
+          return false
+        }
+        // Give up after max attempts
         setUser(null)
         setLoading(false)
         return true
@@ -87,6 +93,40 @@ export function useTelegramUser() {
       return true
     }
 
+		// Respond immediately when Telegram signals readiness
+    const onTelegramReady: EventListener = () => {
+      const finished = resolveAndSetUser()
+      if (finished) {
+        if (intervalId) {
+          clearInterval(intervalId)
+          intervalId = null
+        }
+        setLoading(false)
+      }
+    }
+    document.addEventListener('TelegramWebAppReady', onTelegramReady)
+
+		// If SDK script loads after mount, attempt resolution then
+		const onSdkLoaded: EventListener = () => {
+			const finished = resolveAndSetUser()
+			if (finished) {
+				if (intervalId) {
+					clearInterval(intervalId)
+					intervalId = null
+				}
+				setLoading(false)
+			}
+		}
+		sdkScriptEl = document.getElementById('telegram-web-app-sdk') as HTMLScriptElement | null
+		if (sdkScriptEl) {
+			// If the script is already evaluated, resolve immediately; otherwise wait for load
+			if ((globalThis as unknown as { Telegram?: { WebApp?: TelegramWebApp } }).Telegram?.WebApp) {
+				onSdkLoaded(new Event('load'))
+			} else {
+				sdkScriptEl.addEventListener('load', onSdkLoaded)
+			}
+		}
+
     // Try immediately once
     const done = resolveAndSetUser()
     if (!done) {
@@ -107,7 +147,9 @@ export function useTelegramUser() {
       setLoading(false)
     }
 
-    return () => {
+		return () => {
+      document.removeEventListener('TelegramWebAppReady', onTelegramReady)
+			if (sdkScriptEl) sdkScriptEl.removeEventListener('load', onSdkLoaded)
       if (intervalId) clearInterval(intervalId)
     }
   }, [])
