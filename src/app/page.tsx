@@ -8,10 +8,12 @@ import { Task } from "@/components/Task";
 import { WalletCoins } from "@/components/WalletCoins";
 import { WheelBanner } from "@/components/WheelBanner";
 import SpinWheel from "@/components/SpinWheel";
+import { useWalletInfo } from "@reown/appkit/react";
 
 export default function Home() {
   // Simulate work to show the global loading UI
   // await new Promise((r) => setTimeout(r, 1500));
+  const { walletInfo } = useWalletInfo();
 
   return (
     // // <ClientGate>
@@ -56,7 +58,7 @@ export default function Home() {
         </div>
         <div className="p-2">
           <h1>AppKit Wagmi Next.js App Router Example</h1>
-          {/* user: {user?.first_name} {user?.last_name} {user?.username} {user?.language_code} */}
+          {JSON.stringify(walletInfo)}
         </div>
       </div>
     </ClientGate>
