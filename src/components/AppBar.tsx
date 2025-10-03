@@ -24,16 +24,18 @@ export const AppBar = () => {
               <div className="h-9 w-9 rounded-2xl bg-base-200 animate-pulse" />
             </>
           ) : (
-            <Link href="/me">
+            <>
               <p className="text-xs font-bold">{user?.username}</p>
-              <img
-                src={user?.photo_url || "/images/face-man.svg"}
-                alt="Telegram Profile Picture"
-                width={36}
-                height={36}
-                className="rounded-2xl w-9 h-9"
-              />
-            </Link>
+              <Link href="/me">
+                <img
+                  src={user?.photo_url || "/images/face-man.svg"}
+                  alt="Telegram Profile Picture"
+                  width={36}
+                  height={36}
+                  className="rounded-2xl w-9 h-9"
+                />
+              </Link>
+            </>
           )}
         </div>
       </div>
