@@ -32,10 +32,14 @@ export default function ClientGate({ children }: { children: React.ReactNode }) 
   const shouldRedirectToLogin = unauthenticated && pathname !== '/login'
   // const shouldAccessHome = !unauthenticated && isConnected
 
-  if (shouldRedirectToLogin) {
-    router.replace('/login')
-    return null
-  }
+  useEffect(() => {
+    if (!mounted) return
+    if (shouldRedirectToLogin) {
+      router.replace('/login')
+    }
+  }, [mounted, shouldRedirectToLogin, router])
+
+  if (shouldRedirectToLogin) return null
 
   return <>{children}</>
 }
