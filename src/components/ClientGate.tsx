@@ -26,8 +26,6 @@ export default function ClientGate({ children }: { children: React.ReactNode }) 
     // setHasVisited(visited)
   }, [mounted])
 
-  if (!mounted) return null
-
   const unauthenticated = !isAuthenticated
   const shouldRedirectToLogin = unauthenticated && pathname !== '/login'
   // const shouldAccessHome = !unauthenticated && isConnected
@@ -38,7 +36,7 @@ export default function ClientGate({ children }: { children: React.ReactNode }) 
       router.replace('/login')
     }
   }, [mounted, shouldRedirectToLogin, router])
-
+  if (!mounted) return null
   if (shouldRedirectToLogin) return null
 
   return <>{children}</>
