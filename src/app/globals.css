@@ -94,6 +94,34 @@ a {
   text-decoration: none;
 }
 
+/* Thin, dark scrollbars (mobile-like) */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-base-300) transparent;
+}
+
+/* WebKit (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, var(--color-base-300), var(--color-base-200));
+  border-radius: 9999px;
+  border: 2px solid transparent; /* creates padding */
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, color-mix(in oklab, var(--color-base-300) 90%, black), var(--color-base-200));
+}
+
 /* Font utility classes */
 .font-iransans {
   font-family: var(--font-iransans), 'IRANSansXV', sans-serif;
