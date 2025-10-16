@@ -16,51 +16,36 @@ export default function Home() {
   const { walletInfo } = useWalletInfo();
 
   return (
-    // // <ClientGate>
-    //   <div className={"pages"}>
-    //     <Image src="/reown.svg" alt="Reown" width={150} height={150} priority />
-    //     <h1>AppKit Wagmi Next.js App Router Example</h1>
-    //     user: {user?.first_name} {user?.last_name} {user?.username} {user?.language_code}
-    //     <ConnectButton />
-    //     <ActionButtonList />
-    //     <div className="advice">
-    //       <p>
-    //         This projectId only works on localhost. <br/>Go to <a href="https://cloud.reown.com" target="_blank" className="link-button" rel="Reown Cloud">Reown Cloud</a> to get your own.
-    //       </p>
-    //     </div>
-    //     <InfoList />
-    //   </div>
-    // // </ClientGate>
-    <ClientGate>
-      <div className="flex flex-col gap-4">
-        <WalletCoins />
-        <div className="border-base-300 bg-base-200 border-2 rounded-2xl p-4 flex flex-col gap-4">
-          <div className="text-2xl font-bold pb-4 border-primary border-b-2 text-center">
-            ماموریت بیت
-          </div>
-          <Task />
-          <WheelBanner />
-          <div className="flex justify-center py-2">
-            <SpinWheel
-              segments={[
-                { label: "1 USDT" },
-                { label: "5 USDT" },
-                { label: "10 USDT" },
-                { label: "15 USDT" },
-                // { label: "10 USDT" },
-                // { label: "10 USDT" },
-                // { label: "1 USDT" },
-                // { label: "10 USDT" },
-              ]}
-              getTargetIndex={() => 1}
-            />
-          </div>
+    // <ClientGate>
+    <div className="flex flex-col gap-4">
+      <WalletCoins />
+      <div className="border-base-300 bg-base-200 border-2 rounded-2xl p-4 flex flex-col gap-4">
+        <div className="text-2xl font-bold pb-4 border-primary border-b-2 text-center">
+          ماموریت بیت
         </div>
-        <div className="p-2">
-          <h1>AppKit Wagmi Next.js App Router Example</h1>
-          {JSON.stringify(walletInfo)}
+        <Task />
+        <WheelBanner />
+        <div className="flex justify-center py-2">
+          <SpinWheel
+            segments={[
+              { label: "1 USDT" },
+              { label: "5 USDT" },
+              { label: "10 USDT" },
+              { label: "15 USDT" },
+              // { label: "10 USDT" },
+              // { label: "10 USDT" },
+              // { label: "1 USDT" },
+              // { label: "10 USDT" },
+            ]}
+            getTargetIndex={() => 1}
+          />
         </div>
       </div>
-    </ClientGate>
+      {/* <div className="p-2">
+        <h1>AppKit Wagmi Next.js App Router Example</h1>
+        {JSON.stringify(walletInfo)}
+      </div> */}
+    </div>
+    // </ClientGate>
   );
 }

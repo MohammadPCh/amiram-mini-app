@@ -13,7 +13,7 @@ export const AppBar = () => {
   const { user, loading, isTelegram } = useTelegramUser();
   console.log(user);
   return (
-    <div className="py-2.5 px-4">
+    <div className="mx-4 py-2.5 px-4">
       <div className="p-2 flex gap-2 items-center border-2 border-base-300 rounded-2xl bg-base-100">
         <ConnectButton />
         <div className="flex flex-1 gap-2 justify-end items-center">
