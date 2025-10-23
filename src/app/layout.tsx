@@ -9,8 +9,8 @@ import { AppBar } from "@/components/AppBar";
 import { NavigationBar } from "@/components/NavigationBar";
 
 export const metadata: Metadata = {
-  title: "AppKit in Next.js + wagmi",
-  description: "AppKit example dApp",
+  title: "Amiram Bit",
+  description: "Amiram Bit is a platform for buying and selling bitcoins.",
 };
 
 export default async function RootLayout({
@@ -33,9 +33,12 @@ export default async function RootLayout({
           strategy="beforeInteractive"
         />
         <ContextProvider cookies={cookies}>
-          <div className="h-screen h-screen-dvh pb-4 pt-16 bg-primary-content flex flex-col gap-4">
+          <div className="relative h-screen h-screen-dvh pb-4 pt-16 bg-primary-content flex flex-col gap-4">
+            <div className="absolute bottom-0 left-0 right-0 h-[500px] bg-radial-[at_50%_100%] from-base-300 to-base-200 to-80%"></div>
             <AppBar />
-            <div className="flex-1 overflow-x-hidden overflow-y-auto px-4">{children}</div>
+            <div className=" relative z-10 flex-1 overflow-x-hidden overflow-y-auto px-4">
+              {children}
+            </div>
             <NavigationBar />
           </div>
         </ContextProvider>
