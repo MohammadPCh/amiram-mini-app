@@ -10,7 +10,7 @@ export const WheelBanner = () => {
         background: 'linear-gradient(45deg, #cba400 0%, #000000 50%,#cba400 100%)',
       }}
     >
-      <div className="flex gap-2 bg-primary rounded-2x justify-between">
+      <div className="flex gap-2 bg-primary rounded-2xl justify-between overflow-hidden">
         <Image src="/images/wheel.svg" alt="Wheel" width={140} height={140} className="mt-6" />
         <div className="flex flex-col gap-2 py-6">
           <div className="flex gap-2 bg-white py-3 px-2 rounded-r-2xl">
