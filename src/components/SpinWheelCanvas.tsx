@@ -17,6 +17,7 @@ type SpinWheelProps = {
   getTargetIndex?: () => number | Promise<number>;
   onSpinEnd?: (index: number, segment: WheelSegment) => void;
   clipToPartial?: boolean;
+  fontSizeScale?: number; // Scale factor for font size (e.g., 0.08 for bigger)
 };
 
 function bezierEasing(x1: number, y1: number, x2: number, y2: number) {
@@ -46,6 +47,7 @@ export const SpinWheelCanvas: React.FC<SpinWheelProps> = ({
   getTargetIndex,
   onSpinEnd,
   clipToPartial = false,
+  fontSizeScale = 0.1, // Default; increase for larger text (e.g., 0.1 ≈96px at size=1000)
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -57,6 +59,15 @@ export const SpinWheelCanvas: React.FC<SpinWheelProps> = ({
   const zeroAlignOffset = 0;
   const easeForward = bezierEasing(0.22, 1, 0.36, 1);
 
+  const fontFamily = useMemo(() => {
+    if (typeof window === 'undefined') return 'sans-serif';
+    const target = containerRef.current ?? document.body;
+    const value = getComputedStyle(target).getPropertyValue('--font-kalame').trim();
+    return value || 'sans-serif';
+  }, []);
+
+  console.log('fontFamily', fontFamily)
+
   const drawWheel = useCallback((rotation: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -64,8 +75,8 @@ export const SpinWheelCanvas: React.FC<SpinWheelProps> = ({
     if (!ctx) return;
 
     const centerX = size / 2;
-    const centerY = size * 1.03;
-    const radius = size * 0.9;
+    const centerY = size * 0.9;
+    const radius = size * 0.8;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -98,10 +109,10 @@ export const SpinWheelCanvas: React.FC<SpinWheelProps> = ({
       const angle = angleDeg * (Math.PI / 180);
       ctx.save();
       ctx.rotate(angle);
-      ctx.translate(0, -labelRadius / 1.4);
+      ctx.translate(0, -labelRadius * 1.3);
       ctx.rotate(-Math.PI / 2);
       ctx.fillStyle = sliceIndex % 2 === 0 ? "#F8F8F8" : "#1C2737";
-      ctx.font = `800 ${Math.max(24, Math.floor(size * 0.06))}px var(--font-kalame), sans-serif`;
+      ctx.font = `900 ${Math.max(24, Math.floor(size * fontSizeScale))}px ${fontFamily}`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.shadowColor = "rgba(0,0,0,0.25)";
@@ -158,7 +169,7 @@ export const SpinWheelCanvas: React.FC<SpinWheelProps> = ({
     if (clipToPartial) {
       ctx.restore();
     }
-  }, [segments, size, segmentAngle, clipToPartial]);
+  }, [segments, size, segmentAngle, clipToPartial, fontFamily, fontSizeScale]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -172,6 +183,13 @@ export const SpinWheelCanvas: React.FC<SpinWheelProps> = ({
     if (ctx) ctx.scale(dpr, dpr);
     drawWheel(currentRotation.current);
   }, [size, drawWheel]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined' || !(document as any).fonts) return;
+    (document as any).fonts.ready.then(() => {
+      drawWheel(currentRotation.current);
+    });
+  }, [drawWheel]);
 
   const animate = useCallback(
     (target: number, duration: number, easing: (t: number) => number, callback: () => void) => {
