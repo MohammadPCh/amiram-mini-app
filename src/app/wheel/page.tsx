@@ -4,9 +4,31 @@ import React from "react";
 import Image from "next/image";
 import SpinWheelCanvas from "@/components/SpinWheelCanvas";
 import { WheelProvider, useWheel } from "@/context/WheelContext";
+import { useEffect, useMemo, useState } from "react";
+
+const segments = [
+  { label: "10 USDT" },
+  { label: "1 USDT" },
+  { label: "0.1 USDT" },
+  { label: "0.01 USDT" },
+  { label: "0.1 USDT" },
+  { label: "1.1 USDT" },
+  { label: "1 USDT" },
+  { label: "0.01 USDT" },
+  { label: "0.1 USDT" },
+  { label: "0.01 USDT" },
+];
 
 function WheelPageContent() {
   const { spin, isSpinning, lastResult } = useWheel();
+  const [showResult, setShowResult] = useState(false);
+
+  useEffect(() => {
+    if (lastResult && !isSpinning) setShowResult(true);
+  }, [lastResult, isSpinning]);
+
+  const closeResult = () => setShowResult(false);
+
   return (
     //     <div className="flex items-center justify-center gap-2 mt-3">
     //   <button
@@ -56,20 +78,26 @@ function WheelPageContent() {
         </div>
       </div>
 
-      <SpinWheelCanvas
-        segments={[
-          { label: "10 USDT" },
-          { label: "1 USDT" },
-          { label: "0.1 USDT" },
-          { label: "0.01 USDT" },
-          { label: "0.001 USDT" },
-          { label: "0.0001 USDT" },
-          { label: "0.00001 USDT" },
-          { label: "0.000001 USDT" },
-          { label: "0.0000001 USDT" },
-          { label: "0.00000001 USDT" },
-        ]}
-      />
+      <SpinWheelCanvas segments={segments} />
+
+      {showResult && lastResult && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 flex flex-col items-center justify-center bg-base-300 rounded-t-4xl px-4 py-10">
+          <div className="text-center font-kalame font-black mt-6">
+            <div className="text-5xl">با گردونه</div>
+            <div className="text-8xl text-primary -mt-4">برنده شدی</div>
+          </div>
+          <div className="flex items-center justify-center gap-2 mt-3">
+            <div className="font-black font-kalame text-8xl text-[#50AF95]">
+              {segments[lastResult.index]?.label ?? ""}
+            </div>
+          </div>
+          <button className="flex bg-primary rounded-t-xl py-4 text-center justify-center items-center gap-4 w-full">
+            <div className="text-base font-bold text-primary-content">
+              دریافت جایزه
+            </div>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
