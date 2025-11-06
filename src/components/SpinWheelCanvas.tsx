@@ -2,6 +2,7 @@
 
 import React, { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import { useResizeObserver } from "@/hooks/useResizeObserver"; // Adjust path as needed
+import { useWheel } from "@/context/WheelContext";
 
 type WheelSegment = {
   label: string;
@@ -53,6 +54,7 @@ export const SpinWheelCanvas: React.FC<SpinWheelProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const currentRotation = useRef(0);
   const [isSpinning, setIsSpinning] = useState(false);
+  const { registerExecutor, setIsSpinning: setGlobalSpinning } = useWheel();
   const { width: containerWidth } = useResizeObserver(containerRef);
   const size = Math.max(minSize, containerWidth || minSize); // Dynamic size, min to avoid tiny
   const segmentAngle = useMemo(() => (segments.length > 0 ? 360 / segments.length : 0), [segments.length]);
@@ -212,12 +214,14 @@ export const SpinWheelCanvas: React.FC<SpinWheelProps> = ({
     [drawWheel]
   );
 
-  const handleSpin = useCallback(async () => {
-    if (isSpinning || disabled || segments.length === 0) return;
+  const spinInternal = useCallback(async (overrideTargetIndex?: number) => {
+    if (isSpinning || disabled || segments.length === 0) return { index: -1 };
     setIsSpinning(true);
 
     let targetIndex: number;
-    if (getTargetIndex) {
+    if (typeof overrideTargetIndex === 'number') {
+      targetIndex = overrideTargetIndex;
+    } else if (getTargetIndex) {
       targetIndex = await Promise.resolve(getTargetIndex());
     } else {
       targetIndex = Math.floor(Math.random() * segments.length);
@@ -243,13 +247,29 @@ export const SpinWheelCanvas: React.FC<SpinWheelProps> = ({
     const durationBack = Math.max(150, Math.min(220, Math.floor(durationMs * 0.03)));
     const durationForward = Math.max(0, durationMs - durationBack);
 
-    animate(targetOvershoot, durationForward, easeForward, () => {
-      animate(targetFinal, durationBack, (t) => t, () => {
-        setIsSpinning(false);
-        onSpinEnd?.(targetIndex, segments[targetIndex]);
+    return await new Promise<{ index: number }>((resolve) => {
+      animate(targetOvershoot, durationForward, easeForward, () => {
+        animate(targetFinal, durationBack, (t) => t, () => {
+          setIsSpinning(false);
+          onSpinEnd?.(targetIndex, segments[targetIndex]);
+          resolve({ index: targetIndex });
+        });
       });
     });
   }, [isSpinning, disabled, segments, getTargetIndex, segmentAngle, durationMs, onSpinEnd, animate]);
+
+  const handleSpin = useCallback(async () => {
+    await spinInternal();
+  }, [spinInternal]);
+
+  useEffect(() => {
+    registerExecutor((opts) => spinInternal(opts?.targetIndex));
+    return () => registerExecutor(null);
+  }, [registerExecutor, spinInternal]);
+
+  useEffect(() => {
+    setGlobalSpinning(isSpinning);
+  }, [isSpinning, setGlobalSpinning]);
 
   return (
     <div
