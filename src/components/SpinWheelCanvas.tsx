@@ -77,7 +77,7 @@ export const SpinWheelCanvas: React.FC<SpinWheelProps> = ({
     if (!ctx) return;
 
     const centerX = size / 2;
-    const centerY = size * 0.9;
+    const centerY = size * 1.01;
     const radius = size * 0.8;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -150,11 +150,12 @@ export const SpinWheelCanvas: React.FC<SpinWheelProps> = ({
     ctx.fill();
     ctx.restore();
 
+    // Pointer
     const pointerWidth = 12 * (size / 100); // Scale with size
     const pointerHeight = 12 * (size / 100);
     const strokeW = 4 * (size / 100);
     ctx.save();
-    ctx.translate(centerX, pointerHeight);
+    ctx.translate(centerX, centerY - radius * 0.985);
     ctx.fillStyle = "#F5CF31";
     ctx.strokeStyle = "#F5CF31";
     ctx.lineWidth = strokeW;

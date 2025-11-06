@@ -40,7 +40,7 @@ function WheelPageContent() {
   const closeResult = () => setShowResult(false);
 
   return (
-    <div className="rounded-2xl border-2 border-base-300 h-full overflow-hidden relative"> {/* Added relative for overlay positioning */}
+    <div className="rounded-2xl border-2 border-base-300 h-full overflow-hidden overflow-y-auto relative"> {/* Added relative for overlay positioning */}
       <div className="text-center font-kalame font-black mt-6">
         <div className="text-5xl">گردونه رو</div>
         <div className="text-8xl text-primary -mt-4">بچرخون</div>
