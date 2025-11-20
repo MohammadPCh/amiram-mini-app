@@ -1,10 +1,11 @@
 import { FriendsLevel } from '@/components/FriendsLevel'
-import React from 'react'
+import { InviteBox } from '@/components/InviteBox'
 
 const FriendsPage = () => {
   return (
     <div className='flex flex-col'>
       <FriendsLevel />
+      <InviteBox />
     </div>
   )
 }
