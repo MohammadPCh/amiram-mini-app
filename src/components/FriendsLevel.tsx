@@ -32,7 +32,7 @@ export const FriendsLevel = () => {
       className={`flex flex-col gap-2 justify-center items-center text-center border-2 border-b-0 rounded-t-2xl mx-8`}
       style={{ borderColor: levelData.color }}
     >
-      <div key={levelData.title} className='flex flex-col gap-2 pb-2'>
+      {/* <div key={levelData.title} className='flex flex-col gap-2 pb-2'> */}
         <Image src={levelData.icon} alt={levelData.title} width={72} height={72} className='mx-auto'/>
         <div style={{ color: levelData.color }}>
           <span className='font-kalame font-black text-5xl'>{points}</span>
@@ -44,6 +44,11 @@ export const FriendsLevel = () => {
           &nbsp;
           <span style={{ color: levelData.color }}>{levelData.title}</span>
         </div>
+        <div className='w-full h-1 rounded-full flex items-center justify-center py-2 px-4'>
+          <div className='w-1 h-1 bg-gray-200 rounded-full'></div>
+          <div className='w-full h-[1px] bg-gray-200 rounded-full'></div>
+          <div className='w-1 h-1 bg-gray-200 rounded-full'></div>
+        </div>
         <div className='text-xs'>
           <span>ضریب:</span>
           &nbsp;
@@ -51,7 +56,7 @@ export const FriendsLevel = () => {
           &nbsp;
           <span>جوایز دعوت</span>
         </div>
-      </div>
+      {/* </div> */}
     </div>
   )
 }
