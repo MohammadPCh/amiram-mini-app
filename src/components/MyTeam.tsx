@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import React, { FC, HTMLAttributes, useMemo, useState } from "react";
 import Image from "next/image";
 import BottomSheet from "./BottomSheet";
+import TeamMemberDetails from "./TeamMemberDetails";
 
 interface TeamMember {
   id: string;
@@ -122,74 +123,7 @@ export const MyTeam: FC<{
         overlayHiddenClassName="opacity-0"
       >
         {selectedMember && (
-          <div className="w-full max-w-md">
-            <div className="border-2 border-warning rounded-3xl p-5 text-center mb-5">
-              <div className="text-warning font-extrabold text-4xl leading-none">
-                {selectedMember.name}
-              </div>
-              <div className="text-base-content mt-3">
-                {selectedMember.points} امتیاز در تیم (در 30 روز اخیر)
-              </div>
-            </div>
-
-            <div className="border border-base-300 rounded-2xl p-5 bg-base-100/10">
-              <div className="flex items-center justify-between py-2">
-                <div className="text-right text-base-content font-bold">
-                  حجم معامله:
-                </div>
-                <div className="flex items-center gap-2 font-bold">
-                  <span className="text-success">+1 $</span>
-                  <span className="opacity-60">|</span>
-                  <span className="text-warning">+100 S</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <div className="text-right text-base-content font-bold">
-                  اولین معامله 100 دلاری:
-                </div>
-                <div className="flex items-center gap-2 font-bold">
-                  <span className="text-success">+3 $</span>
-                  <span className="opacity-60">|</span>
-                  <span className="text-warning">+400 S</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <div className="text-right text-base-content font-bold">
-                  اولین معامله 200 دلاری:
-                </div>
-                <div className="flex items-center gap-2 font-bold">
-                  <span className="text-success">+4 $</span>
-                  <span className="opacity-60">|</span>
-                  <span className="text-warning">+500 S</span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between mt-5">
-                <div className="text-right text-lg font-extrabold text-base-content">
-                  مجموع سود برای شما:
-                </div>
-                <div className="flex items-center gap-2 text-teal-400">
-                  <Image
-                    src="/images/coins/usdt.svg"
-                    alt="USDT"
-                    width={28}
-                    height={28}
-                  />
-                  <span className="font-kalame text-2xl leading-none">
-                    +{selectedMember.rewards} USDT
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              className="btn btn-warning w-full mt-6 rounded-2xl text-lg"
-              onClick={closeMemberDetails}
-            >
-              بستن
-            </button>
-          </div>
+          <TeamMemberDetails member={selectedMember} onClose={closeMemberDetails} />
         )}
       </BottomSheet>
     </div>
