@@ -5,11 +5,11 @@ import Image from "next/image";
 import SpinWheelCanvas from "@/components/SpinWheelCanvas";
 import { WheelProvider, useWheel } from "@/context/WheelContext";
 import { useEffect, useMemo, useState } from "react";
+import BottomSheet from "@/components/BottomSheet";
 
 function WheelPageContent() {
     const { spin, isSpinning, lastResult } = useWheel();
     const [showResult, setShowResult] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
     const segments = useMemo(() => [
       { label: "10 USDT" },
       { label: "1 USDT" },
@@ -28,16 +28,8 @@ function WheelPageContent() {
   }, [lastResult, isSpinning]);
 
   useEffect(() => {
-    if (showResult) {
-      // Short delay to trigger animations on mount
-      const timer = setTimeout(() => setIsVisible(true), 50);
-      return () => clearTimeout(timer);
-    } else {
-      setIsVisible(false);
-    }
+    // No-op kept for potential future side-effects
   }, [showResult]);
-
-  const closeResult = () => setShowResult(false);
 
   return (
     <div className="rounded-2xl border-2 border-base-300 h-full overflow-hidden overflow-y-auto relative"> {/* Added relative for overlay positioning */}
@@ -80,34 +72,31 @@ function WheelPageContent() {
 
       <SpinWheelCanvas segments={segments} />
 
-      {showResult && (
-        <div 
-          className={`fixed inset-0 z-40 transition-all duration-500 ease-out bg-gradient-to-t from-[#F5CF31]/90 to-transparent 
-            ${isVisible ? 'opacity-70 translate-y-0 rise-glow' : 'opacity-0 translate-y-full'}`} // Increased opacity for stronger shine, covers content
-        />
-      )}
-
-      {showResult && lastResult && (
-        <div 
-          className={`fixed bottom-0 left-0 right-0 z-50 flex flex-col items-center justify-center bg-base-300 rounded-t-4xl px-4 py-10 
-            transition-all duration-500 ease-out ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}
-        >
-          <div className="text-center font-kalame font-black mt-6">
-            <div className="text-5xl">با گردونه</div>
-            <div className="text-8xl text-primary -mt-4">برنده شدی</div>
-          </div>
-          <div className="flex items-center justify-center gap-2 mt-3">
-            <div className="font-black font-kalame text-8xl text-[#50AF95]">
-              {segments[lastResult.index]?.label ?? ""}
+      <BottomSheet
+        open={showResult}
+        overlayClassName="bg-gradient-to-t from-[#F5CF31]/90 to-transparent rise-glow"
+        overlayVisibleClassName="opacity-70"
+        overlayHiddenClassName="opacity-0"
+      >
+        {lastResult && (
+          <>
+            <div className="text-center font-kalame font-black mt-6">
+              <div className="text-5xl">با گردونه</div>
+              <div className="text-8xl text-primary -mt-4">برنده شدی</div>
             </div>
-          </div>
-          <button className="flex bg-primary rounded-t-xl py-4 text-center justify-center items-center gap-4 w-full">
-            <div className="text-base font-bold text-primary-content">
-              دریافت جایزه
+            <div className="flex items-center justify-center gap-2 mt-3">
+              <div className="font-black font-kalame text-8xl text-[#50AF95]">
+                {segments[lastResult.index]?.label ?? ""}
+              </div>
             </div>
-          </button>
-        </div>
-      )}
+            <button className="flex bg-primary rounded-t-xl py-4 text-center justify-center items-center gap-4 w-full">
+              <div className="text-base font-bold text-primary-content">
+                دریافت جایزه
+              </div>
+            </button>
+          </>
+        )}
+      </BottomSheet>
     </div>
   );
 }
