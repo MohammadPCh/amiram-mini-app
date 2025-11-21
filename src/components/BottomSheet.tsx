@@ -13,6 +13,8 @@ type BottomSheetProps = {
   overlayVisibleClassName?: string;
   overlayHiddenClassName?: string;
   panelClassName?: string;
+  panelVisibleClassName?: string;
+  panelHiddenClassName?: string;
 };
 
 export default function BottomSheet({
@@ -25,6 +27,8 @@ export default function BottomSheet({
   overlayVisibleClassName = 'opacity-70',
   overlayHiddenClassName = 'opacity-0',
   panelClassName,
+  panelVisibleClassName = 'translate-y-0 opacity-100 scale-100',
+  panelHiddenClassName = 'translate-y-full opacity-0 scale-95',
 }: BottomSheetProps) {
   const [isMounted, setIsMounted] = useState(open);
   const [isVisible, setIsVisible] = useState(false);
@@ -32,13 +36,12 @@ export default function BottomSheet({
   useEffect(() => {
     if (open) {
       setIsMounted(true);
-      // allow next frame to apply enter transition
-      const id = requestAnimationFrame(() => setIsVisible(true));
-      return () => cancelAnimationFrame(id);
+      const showTimer = setTimeout(() => setIsVisible(true), 20);
+      return () => clearTimeout(showTimer);
     } else {
       setIsVisible(false);
-      const timer = setTimeout(() => setIsMounted(false), animationMs);
-      return () => clearTimeout(timer);
+      const hideTimer = setTimeout(() => setIsMounted(false), animationMs);
+      return () => clearTimeout(hideTimer);
     }
   }, [open, animationMs]);
 
@@ -48,16 +51,16 @@ export default function BottomSheet({
     <>
       <div
         className={clsx(
-          'fixed inset-0 z-40 transition-all duration-500 ease-out',
-          overlayClassName ?? 'bg-black/70',
+          'fixed inset-0 z-40 transition-all duration-500 ease-in-out',
+          overlayClassName ?? 'bg-black/70 backdrop-blur-sm',
           isVisible ? overlayVisibleClassName : overlayHiddenClassName
         )}
         onClick={closeOnOverlayClick ? onClose : undefined}
       />
       <div
         className={clsx(
-          'fixed bottom-0 left-0 right-0 z-50 transition-all duration-500 ease-out',
-          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+          'fixed bottom-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out',
+          isVisible ? panelVisibleClassName : panelHiddenClassName
         )}
       >
         <div
