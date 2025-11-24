@@ -77,6 +77,8 @@ function WheelPageContent() {
         overlayClassName="bg-gradient-to-t from-[#F5CF31]/90 to-transparent rise-glow"
         overlayVisibleClassName="opacity-70"
         overlayHiddenClassName="opacity-0"
+        closeOnOverlayClick={true}
+        onClose={() => setShowResult(false)}
       >
         {lastResult && (
           <>
