@@ -284,7 +284,7 @@ export const SpinWheelCanvas: React.FC<SpinWheelProps> = ({
     >
       <button
         type="button"
-        onClick={handleSpin}
+        // onClick={handleSpin}
         disabled={disabled || isSpinning || segments.length === 0}
         style={{
           all: "unset",
