@@ -25,21 +25,6 @@ export default function Home() {
         </div>
         <Task />
         <WheelBanner />
-        <div className="flex justify-center py-2">
-          <SpinWheel
-            segments={[
-              { label: "1 USDT" },
-              { label: "5 USDT" },
-              { label: "10 USDT" },
-              { label: "15 USDT" },
-              // { label: "10 USDT" },
-              // { label: "10 USDT" },
-              // { label: "1 USDT" },
-              // { label: "10 USDT" },
-            ]}
-            getTargetIndex={() => 1}
-          />
-        </div>
       </div>
       {/* <div className="p-2">
         <h1>AppKit Wagmi Next.js App Router Example</h1>
