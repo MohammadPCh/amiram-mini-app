@@ -18,30 +18,7 @@ import {
 } from "@reown/appkit/react";
 import { ConnectionController } from "@reown/appkit-controllers";
 import "@reown/appkit-ui/wui-qr-code";
-
-const mockData = [
-  {
-    balance: "12.32",
-    symbol: "USDT",
-    color: "#50AF95",
-  },
-
-  {
-    balance: "0.001",
-    symbol: "BNB",
-    color: "#F3BA2F",
-  },
-  {
-    balance: "10.00",
-    symbol: "ADA",
-    color: "#FFFFFF",
-  },
-  {
-    balance: "0.006",
-    symbol: "XRP",
-    color: "#F5CF31",
-  },
-];
+import { useBalance, useCheckout, useUpdateWallet, useWallet } from "@/hooks/be";
 
 type SupportedView = Extract<Views, "Connect" | "AllWallets">;
 
@@ -73,22 +50,37 @@ export const ClaimBox = () => {
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
   const { walletInfo } = useWalletInfo();
+  const { data: balanceData, isLoading: balanceLoading } = useBalance();
+  const { data: walletData } = useWallet();
+  const updateWallet = useUpdateWallet();
+  const checkout = useCheckout();
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
+  const [amount, setAmount] = useState<string>("");
   const [wcUri, setWcUri] = useState<string | undefined>();
   const [isGeneratingQr, setIsGeneratingQr] = useState(false);
   const [qrError, setQrError] = useState<string | null>(null);
   const [hasCopiedUri, setHasCopiedUri] = useState(false);
+  const [checkoutTx, setCheckoutTx] = useState<string | null>(null);
   const copyFeedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleClaim = () => {
     setIsBottomSheetOpen(true);
+    setCheckoutTx(null);
+    const currentBalance = balanceData?.balance ?? 0;
+    setAmount(currentBalance > 0 ? String(currentBalance) : "");
   };
 
   useEffect(() => {
     if (!address) return;
     setWalletAddress(address);
   }, [address]);
+
+  useEffect(() => {
+    if (!address && walletData?.wallet) {
+      setWalletAddress(walletData.wallet);
+    }
+  }, [address, walletData?.wallet]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -130,8 +122,7 @@ export const ClaimBox = () => {
   }, [ensureWalletConnectPairing, isBottomSheetOpen, isGeneratingQr, wcUri]);
 
   const handleConfirm = () => {
-    if (!walletAddress.trim()) return;
-    setIsBottomSheetOpen(false);
+    // handled async below
   };
 
   const handleConnectWallet = useCallback(
@@ -182,13 +173,11 @@ export const ClaimBox = () => {
       <div className="flex items-center gap-3 text-teal-400">
         <Image src="/images/coins/usdt.svg" alt="Coin" width={32} height={32} />
         <span className="font-kalame font-black text-5xl leading-none">
-          5.00
+          {balanceLoading ? "—" : (balanceData?.balance ?? 0).toFixed(2)}
         </span>
       </div>
       <div className="w-full flex flex-row-reverse items-center justify-center gap-4">
-        {mockData.map((item) => (
-          <TokenBalance key={item.symbol} {...item} />
-        ))}
+        <TokenBalance balance={balanceLoading ? "—" : (balanceData?.balance ?? 0).toFixed(2)} symbol="USDT" color="#50AF95" />
       </div>
       <div className="w-full px-7">
         <button
@@ -215,6 +204,20 @@ export const ClaimBox = () => {
               dir="ltr"
               value={walletAddress}
               onChange={(event) => setWalletAddress(event.target.value)}
+              className="w-full rounded-2xl border border-white/10 bg-[#0C1424] px-4 py-3 text-base font-medium text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
+          </div>
+          <div className="mt-4 flex flex-col gap-2 text-right">
+            <label className="text-sm text-white/70" htmlFor="amount-input">
+              مبلغ برداشت (USDT):
+            </label>
+            <input
+              id="amount-input"
+              placeholder="مثلا 1"
+              dir="ltr"
+              inputMode="decimal"
+              value={amount}
+              onChange={(event) => setAmount(event.target.value)}
               className="w-full rounded-2xl border border-white/10 bg-[#0C1424] px-4 py-3 text-base font-medium text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
@@ -334,11 +337,30 @@ export const ClaimBox = () => {
           <button
             type="button"
             className="mt-8 w-full rounded-2xl bg-gradient-to-r from-[#FDE047] via-[#FACC15] to-[#F59E0B] py-3 text-lg font-black text-black transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={isConfirmDisabled}
-            onClick={handleConfirm}
+            disabled={isConfirmDisabled || updateWallet.isPending || checkout.isPending}
+            onClick={async () => {
+              const wallet = walletAddress.trim();
+              if (!wallet) return;
+              const parsedAmount = Number(amount);
+              if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) return;
+              try {
+                await updateWallet.mutateAsync(wallet);
+                const res = await checkout.mutateAsync({ amount: parsedAmount });
+                setCheckoutTx(res.tx_hash);
+                setIsBottomSheetOpen(false);
+              } catch (e) {
+                // keep sheet open; errors are logged by hooks/http layer if any
+                console.error(e);
+              }
+            }}
           >
             تایید
           </button>
+          {checkoutTx && (
+            <p className="mt-3 text-center text-xs text-white/70" dir="ltr">
+              tx: {checkoutTx}
+            </p>
+          )}
         </div>
       </BottomSheet>
     </div>

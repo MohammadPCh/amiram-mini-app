@@ -6,22 +6,25 @@ import SpinWheelCanvas from "@/components/SpinWheelCanvas";
 import { WheelProvider, useWheel } from "@/context/WheelContext";
 import { useEffect, useMemo, useState } from "react";
 import BottomSheet from "@/components/BottomSheet";
+import { useWheelConfig, useWheelSpin } from "@/hooks/be";
 
 function WheelPageContent() {
     const { spin, isSpinning, lastResult } = useWheel();
     const [showResult, setShowResult] = useState(false);
-    const segments = useMemo(() => [
-      { label: "10 USDT" },
-      { label: "1 USDT" },
-      { label: "0.1 USDT" },
-      { label: "0.01 USDT" },
-      { label: "0.1 USDT" },
-      { label: "1.1 USDT" },
-      { label: "1 USDT" },
-      { label: "0.01 USDT" },
-      { label: "0.1 USDT" },
-      { label: "0.01 USDT" },
-    ], []);
+    const { data: configData, isLoading: configLoading } = useWheelConfig();
+    const wheelSpin = useWheelSpin();
+    const [remainingEnergy, setRemainingEnergy] = useState<number | null>(null);
+    const [lastReward, setLastReward] = useState<{ reward_type: string; reward_amount: number } | null>(null);
+
+    const segments = useMemo(() => {
+      const configs = configData?.configs ?? [];
+      if (configs.length === 0) return [];
+      return configs.map((c, i) => ({
+        label: `${c.reward_amount} ${c.reward_type === "energy" ? "Energy" : c.reward_type}`,
+        color: i % 2 === 0 ? "#1C2737" : "#FFFFFF",
+        payload: c,
+      }));
+    }, [configData?.configs]);
 
   useEffect(() => {
     if (lastResult && !isSpinning) setShowResult(true);
@@ -39,8 +42,22 @@ function WheelPageContent() {
       </div>
       <div className="mt-12">
         <button
-          onClick={() => spin()}
-          disabled={isSpinning}
+          onClick={async () => {
+            try {
+              const res = await wheelSpin.mutateAsync();
+              setLastReward({ reward_type: res.reward_type, reward_amount: res.reward_amount });
+              setRemainingEnergy(res.remaining_energy);
+              const idx = segments.findIndex((s) => {
+                const label = s.label.toLowerCase();
+                const wantType = res.reward_type.toLowerCase();
+                return label.includes(String(res.reward_amount)) && label.includes(wantType);
+              });
+              await spin({ targetIndex: idx >= 0 ? idx : undefined });
+            } catch (e) {
+              console.error(e);
+            }
+          }}
+          disabled={isSpinning || wheelSpin.isPending || segments.length === 0 || (typeof remainingEnergy === "number" && remainingEnergy <= 0)}
           className="flex bg-primary rounded-t-xl py-4 text-center justify-center items-center gap-4 w-full"
         >
           <div className="text-base font-bold text-primary-content">بچرخون</div>
@@ -56,7 +73,9 @@ function WheelPageContent() {
         </button>
         <div className="flex items-center justify-center gap-2 mt-3">
           <div className="flex items-center justify-center">
-            <span className="text-sm text-primary">۵</span>
+            <span className="text-sm text-primary">
+              {remainingEnergy === null ? "—" : remainingEnergy}
+            </span>
             <Image
               src="/images/sparkle.png"
               alt="spark"
@@ -70,7 +89,11 @@ function WheelPageContent() {
         </div>
       </div>
 
-      <SpinWheelCanvas segments={segments} />
+      {configLoading ? (
+        <div className="mt-10 text-center text-sm opacity-70">در حال دریافت تنظیمات گردونه...</div>
+      ) : (
+        <SpinWheelCanvas segments={segments} />
+      )}
 
       <BottomSheet
         open={showResult}
@@ -88,7 +111,9 @@ function WheelPageContent() {
             </div>
             <div className="flex items-center justify-center gap-2 mt-3">
               <div className="font-black font-kalame text-8xl text-[#50AF95]">
-                {segments[lastResult.index]?.label ?? ""}
+                {lastReward
+                  ? `${lastReward.reward_amount} ${lastReward.reward_type === "energy" ? "Energy" : lastReward.reward_type}`
+                  : segments[lastResult.index]?.label ?? ""}
               </div>
             </div>
             <button className="flex bg-primary rounded-t-xl py-4 text-center justify-center items-center gap-4 w-full">

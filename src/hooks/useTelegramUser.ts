@@ -24,6 +24,7 @@ export function useTelegramUser() {
   const [user, setUser] = useState<TelegramUser | null>(null)
   const [isTelegram, setIsTelegram] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(true)
+  const [initData, setInitData] = useState<string | null>(null)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -66,6 +67,14 @@ export function useTelegramUser() {
       try {
         tg?.ready?.()
       } catch {}
+
+      // Store raw initData for backend auth
+      const rawInitData: string | null =
+        (typeof (tg as any)?.initData === 'string' && (tg as any).initData.trim().length > 0
+          ? (tg as any).initData
+          : null) ??
+        (url.searchParams.get('tgWebAppData') ? url.searchParams.get('tgWebAppData') : null)
+      setInitData(rawInitData)
 
       let resolvedUser: TelegramUser | undefined = tg?.initDataUnsafe?.user
 
@@ -156,7 +165,7 @@ export function useTelegramUser() {
 
   const isAuthenticated = useMemo(() => Boolean(user?.id), [user])
 
-  return { user, isAuthenticated, isTelegram, loading }
+  return { user, isAuthenticated, isTelegram, loading, initData }
 }
 
 

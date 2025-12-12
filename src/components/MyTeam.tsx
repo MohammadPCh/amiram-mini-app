@@ -4,6 +4,7 @@ import React, { FC, HTMLAttributes, useMemo, useState } from "react";
 import Image from "next/image";
 import BottomSheet from "./BottomSheet";
 import TeamMemberDetails from "./TeamMemberDetails";
+import { useTeamMembers } from "@/hooks/be";
 
 interface TeamMember {
   id: string;
@@ -17,35 +18,18 @@ interface TeamMember {
 export const MyTeam: FC<{
   className?: HTMLAttributes<HTMLDivElement>["className"];
 }> = ({ className }) => {
-  const team: TeamMember[] = useMemo(
-    () => [
-      {
-        id: "1",
-        name: "John Doe",
-        image: "/images/team/1.png",
-        level: 1,
-        points: 100,
-        rewards: 100,
-      },
-      {
-        id: "2",
-        name: "John Doe",
-        image: "/images/team/1.png",
-        level: 1,
-        points: 1200,
-        rewards: 10,
-      },
-      {
-        id: "3",
-        name: "John Doe",
-        image: "/images/team/1.png",
-        level: 1,
-        points: 1400,
-        rewards: 15,
-      },
-    ],
-    []
-  );
+  const { data, isLoading } = useTeamMembers({ page: 1 });
+  const team: TeamMember[] = useMemo(() => {
+    const members = data?.members ?? [];
+    return members.map((m) => ({
+      id: String(m.telegram_id),
+      name: m.first_name || (m.username ? `@${m.username}` : String(m.telegram_id)),
+      image: "/images/face-man.svg",
+      level: 0,
+      points: m.score,
+      rewards: m.balance,
+    }));
+  }, [data?.members]);
 
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
@@ -64,7 +48,9 @@ export const MyTeam: FC<{
     >
       <div>تیم من</div>
       <hr className="w-full border-primary" />
-      {team.length > 0 ? (
+      {isLoading ? (
+        <div className="text-sm opacity-70 py-6">در حال دریافت اعضا...</div>
+      ) : team.length > 0 ? (
         team.map((item) => (
           <button
             type="button"
@@ -92,7 +78,7 @@ export const MyTeam: FC<{
             </div>
             <div className="rounded-xl bg-gray-700 p-2">
               <Image
-                src="/images/face-man.svg"
+                src={item.image}
                 alt={item.name}
                 width={18}
                 height={18}

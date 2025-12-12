@@ -7,6 +7,7 @@ import Script from "next/script";
 import { iransans, kalame } from "@/lib/fonts";
 import { AppBar } from "@/components/AppBar";
 import { NavigationBar } from "@/components/NavigationBar";
+import ClientGate from "@/components/ClientGate";
 
 export const metadata: Metadata = {
   title: "Amiram Bit",
@@ -37,7 +38,7 @@ export default async function RootLayout({
             <div className="absolute bottom-0 left-0 right-0 h-[500px] bg-radial-[at_50%_100%] from-base-300 to-base-200 to-80%"></div>
             <AppBar />
             <div className=" relative z-10 flex-1 overflow-x-hidden overflow-y-auto px-4">
-              {children}
+              <ClientGate>{children}</ClientGate>
             </div>
             <NavigationBar />
           </div>

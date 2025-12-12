@@ -1,36 +1,34 @@
 import Image from "next/image";
-
-const mockData = [
-  {
-    id: 1,
-    title: "دوبار به ربات سر بزن",
-    amount: 10,
-    dateTime: new Date("2025-01-01 12:00:00"),
-  },
-  {
-    id: 2,
-    title: "یکی از دوستات رو دعوت کن",
-    amount: 34.5,
-    dateTime: new Date("2025-01-01 12:00:00"),
-  },
-  {
-    id: 3,
-    title: "بیشتر از ۲۰۰ دلار معامله کن",
-    amount: 57.6,
-    dateTime: new Date("2025-01-01 12:00:00"),
-  },
-];
+import { useClaimReward, useRewards } from "@/hooks/be";
 
 const RewardsBox = () => {
+  const { data, isLoading } = useRewards({ page: 1, status: "pending" });
+  const claim = useClaimReward();
+  const rewards = data?.rewards ?? [];
   return (
     <div className="bg-base-100 rounded-2xl p-4 border-2 border-base-300 flex flex-col gap-4">
       <h1 className="text-2xl font-bold font-kalame text-center pb-4 border-b border-primary">
         جوایز
       </h1>
       <div className="flex flex-col gap-4">
-        {mockData.map((item) => (
-          <RewardItem key={item.id} {...item} />
-        ))}
+        {isLoading ? (
+          <div className="text-center text-sm opacity-70">در حال دریافت...</div>
+        ) : rewards.length === 0 ? (
+          <div className="text-center text-sm opacity-70">جایزه‌ای برای دریافت ندارید.</div>
+        ) : (
+          rewards.map((item) => (
+            <RewardItem
+              key={item.id}
+              id={item.id}
+              title={item.type}
+              amount={item.amount}
+              currency={item.currency}
+              dateTime={new Date(item.created_at)}
+              isClaiming={claim.isPending}
+              onClaim={() => claim.mutate(item.id)}
+            />
+          ))
+        )}
       </div>
     </div>
   );
@@ -40,12 +38,18 @@ const RewardItem = ({
   id,
   title,
   amount,
+  currency,
   dateTime,
+  isClaiming,
+  onClaim,
 }: {
   id: number;
   title: string;
   amount: number;
+  currency: string;
   dateTime: Date;
+  isClaiming: boolean;
+  onClaim: () => void;
 }) => {
   return (
     <div className="flex items-end font-iran-sans">
@@ -68,14 +72,18 @@ const RewardItem = ({
             <div className="flex gap-1 items-center justify-end flex-1">
               <div className="font-bold text-[#50AF95] pt-1">{amount}</div>
               <Image
-                src="/images/coins/usdt.svg"
+                src={currency?.toUpperCase() === "USDT" ? "/images/coins/usdt.svg" : "/images/coins/usdt.svg"}
                 alt="Coin"
                 width={18}
                 height={18}
               />
             </div>
           </div>
-          <button className="flex-1 rounded-lg bg-base-100 py-1.5 px-3 text-base-content">
+          <button
+            className="flex-1 rounded-lg bg-base-100 py-1.5 px-3 text-base-content disabled:opacity-60"
+            onClick={onClaim}
+            disabled={isClaiming}
+          >
             دریافت جایزه
           </button>
         </div>
