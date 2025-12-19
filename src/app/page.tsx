@@ -9,11 +9,13 @@ import { WalletCoins } from "@/components/WalletCoins";
 import { WheelBanner } from "@/components/WheelBanner";
 import SpinWheel from "@/components/SpinWheel";
 import { useWalletInfo } from "@reown/appkit/react";
+import { useTelegramUser } from "@/hooks/useTelegramUser";
 
 export default function Home() {
   // Simulate work to show the global loading UI
   // await new Promise((r) => setTimeout(r, 1500));
   const { walletInfo } = useWalletInfo();
+  const { initData } = useTelegramUser();
 
   return (
     // <ClientGate>
@@ -25,6 +27,9 @@ export default function Home() {
         </div>
         <Task />
         <WheelBanner />
+      </div>
+      <div>
+        {initData}
       </div>
       {/* <div className="p-2">
         <h1>AppKit Wagmi Next.js App Router Example</h1>
