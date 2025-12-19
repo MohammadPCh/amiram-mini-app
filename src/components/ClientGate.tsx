@@ -16,6 +16,7 @@ export default function ClientGate({ children }: { children: React.ReactNode }) 
   const beAuth = useBackendAuth(initData)
   const router = useRouter()
   const pathname = usePathname()
+  const beDisabled = process.env.NEXT_PUBLIC_BE_DISABLED === 'true'
   // const [hasVisited, setHasVisited] = useState<boolean>(false)
 
   useEffect(() => {
@@ -28,17 +29,18 @@ export default function ClientGate({ children }: { children: React.ReactNode }) 
     // setHasVisited(visited)
   }, [mounted])
 
-  const shouldRedirectToLogin = (!isTelegram || !beAuth.isLoggedIn) && pathname !== '/login'
+  const shouldRedirectToLogin = !beDisabled && (!isTelegram || !beAuth.isLoggedIn) && pathname !== '/login'
   // const shouldAccessHome = !unauthenticated && isConnected
 
   useEffect(() => {
     if (!mounted) return
+    if (beDisabled) return
     // Wait for backend auth attempt in Telegram before deciding.
     if (isTelegram && !beAuth.ready) return
     if (shouldRedirectToLogin) {
       router.replace('/login')
     }
-  }, [mounted, shouldRedirectToLogin, router, isTelegram, beAuth.ready])
+  }, [mounted, shouldRedirectToLogin, router, isTelegram, beAuth.ready, beDisabled])
 
   // Telegram UI adjustments: ready, expand, hide back button, confirm on close
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function ClientGate({ children }: { children: React.ReactNode }) 
     try { tg.enableClosingConfirmation?.() } catch {}
   }, [mounted, isTelegram])
   if (!mounted) return null
-  if (isTelegram && !beAuth.ready) return null
+  if (!beDisabled && isTelegram && !beAuth.ready) return null
   if (shouldRedirectToLogin) return null
 
   return <>{children}</>
