@@ -28,7 +28,7 @@ export default function Home() {
         <Task />
         <WheelBanner />
       </div>
-      <div>
+      <div className="wrap-anywhere">
         {initData}
       </div>
       {/* <div className="p-2">
