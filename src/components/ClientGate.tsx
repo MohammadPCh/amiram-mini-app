@@ -16,7 +16,7 @@ export default function ClientGate({ children }: { children: React.ReactNode }) 
   const beAuth = useBackendAuth(initData)
   const router = useRouter()
   const pathname = usePathname()
-  const beDisabled = process.env.NEXT_PUBLIC_BE_DISABLED === 'true'
+  const beDisabled = true;
   // const [hasVisited, setHasVisited] = useState<boolean>(false)
 
   useEffect(() => {

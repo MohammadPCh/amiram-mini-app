@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { be } from '@/lib/api/endpoints'
 import type { CheckoutRequest, Reward, RewardsListResponse, TeamMembersResponse, WheelConfigResponse } from '@/lib/api/types'
 
-const BE_DISABLED = process.env.NEXT_PUBLIC_BE_DISABLED === 'true'
+const BE_DISABLED = true;
 
 function isoDaysAgo(days: number) {
   const d = new Date()
