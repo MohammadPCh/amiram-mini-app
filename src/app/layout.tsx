@@ -34,8 +34,9 @@ export default async function RootLayout({
           strategy="beforeInteractive"
         />
         <ContextProvider cookies={cookies}>
-          <div className="relative h-screen h-screen-dvh pb-4 pt-16 bg-primary-content flex flex-col gap-4">
-            <div className="absolute bottom-0 left-0 right-0 h-[500px] bg-radial-[at_50%_100%] from-base-300 to-base-200 to-80%"></div>
+          <div className="relative h-screen h-screen-dvh pb-4 pt-16 flex flex-col gap-4">
+            <div className="absolute bottom-0 left-0 right-0 h-[100dvh] bg-radial-[at_50%_100%] from-base-300 to-base-200 to-80% z-[-1]" />
+
             <AppBar />
             <div className=" relative z-10 flex-1 overflow-x-hidden overflow-y-auto px-4">
               <ClientGate>{children}</ClientGate>
