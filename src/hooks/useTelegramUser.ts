@@ -81,9 +81,7 @@ export function useTelegramUser() {
         (url.searchParams.get("tgWebAppData")
           ? url.searchParams.get("tgWebAppData")
           : null);
-      setInitData(
-        "user=%7B%22id%22%3A762436070%2C%22first_name%22%3A%22Navid%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Navid_MSZD%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FGolIxf2D9Pin4HPDEKRek_M2zj_4XTNTOSof9esR6HA.svg%22%7D&chat_instance=1703427971357099187&chat_type=sender&auth_date=1766957057&signature=ZeTebM9P-I2w-EX_AK069qcmdZlPKfWiiQCG2JWAoehEhWKlk-2T1TMh6pHflhy47BOeRyaovpC1-aMTROLjBA&hash=a5e0ee1798cc54d2fd4d2d8f77ff7d778bd1692a781a81eef2399d50be50cc08"
-      );
+      setInitData(rawInitData);
 
       let resolvedUser: TelegramUser | undefined = tg?.initDataUnsafe?.user;
 
