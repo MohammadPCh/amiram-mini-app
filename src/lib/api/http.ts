@@ -16,7 +16,7 @@ function getBaseUrl(): string {
   const base = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
   return base && base.length > 0
     ? base.replace(/\/+$/, "")
-    : "http://localhost";
+    : "https://users-bot-staging.amirambit.com";
 }
 
 function buildUrl(path: string): string {

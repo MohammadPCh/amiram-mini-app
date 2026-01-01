@@ -7,6 +7,7 @@ import type {
   TeamMembersResponse,
   WheelConfigResponse,
 } from "@/lib/api/types";
+import { energy } from "viem/chains";
 
 const BE_DISABLED = false;
 
@@ -140,6 +141,7 @@ export const beKeys = {
   balance: ["be", "balance"] as const,
   level: ["be", "level"],
   levels: ["be", "levels"],
+  energy: ["be", "energy"],
   rewards: (page: number, status: string) =>
     ["be", "rewards", { page, status }] as const,
   wheelConfig: ["be", "wheel", "config"] as const,
@@ -163,6 +165,15 @@ export function useLevel() {
   return useQuery({
     queryKey: beKeys.level,
     queryFn: () => be.user.level(),
+    enabled: !BE_DISABLED,
+    staleTime: BE_DISABLED ? Infinity : 0,
+  });
+}
+
+export function useEnergy() {
+  return useQuery({
+    queryKey: beKeys.energy,
+    queryFn: () => be.user.energy(),
     enabled: !BE_DISABLED,
     staleTime: BE_DISABLED ? Infinity : 0,
   });

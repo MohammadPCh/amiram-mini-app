@@ -81,7 +81,11 @@ export function useTelegramUser() {
         (url.searchParams.get("tgWebAppData")
           ? url.searchParams.get("tgWebAppData")
           : null);
-      setInitData(rawInitData);
+      if (process.env.NEXT_PUBLIC_INIT_DATA) {
+        setInitData(process.env.NEXT_PUBLIC_INIT_DATA);
+      } else {
+        setInitData(rawInitData);
+      }
 
       let resolvedUser: TelegramUser | undefined = tg?.initDataUnsafe?.user;
 

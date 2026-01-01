@@ -6,6 +6,7 @@ import type {
   BalanceResponse,
   CheckoutRequest,
   CheckoutResponse,
+  EnergyResponse,
   InviteLinkResponse,
   RewardClaimResponse,
   RewardsListResponse,
@@ -36,6 +37,7 @@ export const be = {
   user: {
     balance: () => apiFetch<BalanceResponse>("/api/user/balance"),
     level: () => apiFetch<UserLevelResponse>("/api/user/level"),
+    energy: () => apiFetch<EnergyResponse>("/api/user/energy"),
     walletGet: () => apiFetch<WalletResponse>("/api/user/wallet"),
     walletUpdate: (wallet: string) =>
       apiFetch<WalletResponse>("/api/user/wallet", {
