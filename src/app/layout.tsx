@@ -44,7 +44,7 @@ export default async function RootLayout({
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full z-2">
                   <AppBar />
                 </div>
-                <div className="relative z-1 flex-1 overflow-x-hidden overflow-y-auto px-4 pt-[calc(126px+8px)]">
+                <div className="relative z- flex flex-1 overflow-x-hidden overflow-y-auto px-4 pt-[calc(126px)]">
                   <ClientGate>{children}</ClientGate>
                 </div>
                 <NavigationBar />

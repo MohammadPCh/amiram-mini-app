@@ -8,6 +8,7 @@ import {
 import { be } from "@/lib/api/endpoints";
 import { beKeys, useSubmitMission } from "./be";
 import { MissionsListResponse } from "@/lib/api/types";
+import { useMemo } from "react";
 
 export function useInfiniteMissionsWithStatus() {
   const qc = useQueryClient();
@@ -42,20 +43,45 @@ export function useInfiniteMissionsWithStatus() {
     })),
   });
 
-  const missionsWithStatus = missions.map((m, i) => ({
-    ...m,
-    status: statuses[i]?.data?.status ?? "unknown",
-  }));
+  const missionsWithStatus = useMemo(() => {
+    return missions.map((m, i) => {
+      const statusData = statuses[i]?.data;
+      if (statusData) {
+        return { ...m, status: statusData.status };
+      }
+      return m;
+    });
+  }, [missions, statuses]);
+
+  const bannerPosition = useMemo(() => {
+    if (!missionsQuery.data?.pages[0]) return null;
+    const firstPageMissions = missionsQuery.data.pages[0].missions;
+    const maxPosition = Math.min(4, firstPageMissions.length - 1); // 0 to 4, or less if short page
+    if (maxPosition < 0) return null;
+    return Math.floor(Math.random() * (maxPosition + 1));
+  }, [missionsQuery.data?.pages[0]?.missions.length]);
+
+  const listData = useMemo(() => {
+    if (!missionsQuery.data?.pages.length) return [];
+
+    const allMissions = missionsWithStatus;
+    const items: Array<(typeof allMissions)[0] | { type: "banner" }> = [
+      ...allMissions,
+    ];
+
+    if (bannerPosition !== null) {
+      items.splice(bannerPosition + 1, 0, { type: "banner" });
+    }
+
+    return items;
+  }, [missionsWithStatus, bannerPosition]);
 
   return {
-    missions: missionsWithStatus,
-
+    missions: listData,
     fetchNextPage: missionsQuery.fetchNextPage,
     hasNextPage: missionsQuery.hasNextPage,
     isFetchingNextPage: missionsQuery.isFetchingNextPage,
-
     isLoading: missionsQuery.isLoading || statuses.some((s) => s.isLoading),
-
     submitStatus: submitMutation.mutateAsync,
     isSubmitting: submitMutation.isPending,
   };

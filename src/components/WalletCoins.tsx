@@ -11,9 +11,9 @@ export const WalletCoins = () => {
       className="p-2.5 border-2 border-primary rounded-2xl bg-base-100 flex flex-col gap-4"
       style={{
         backgroundImage: "url('/images/bg/card-bg.svg')",
-        backgroundPosition: 'bottom center',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'contain',
+        backgroundPosition: "bottom center",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "contain",
       }}
     >
       <div className="py-2 px-2.5 flex gap-2 items-center justify-center">

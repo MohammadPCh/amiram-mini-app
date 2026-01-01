@@ -1,13 +1,15 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import EnergyDisplay from "./ui/EnergyDisplay";
 
 type TaskProps = {
   title: string;
   description: string;
   reward: number;
+  energy: number;
   rewardSymbol: string;
-  status: string;
+  status?: string;
   ctaHref: string;
   ctaText: string;
 };
@@ -16,6 +18,7 @@ export const Task: React.FC<TaskProps> = ({
   title,
   description,
   reward,
+  energy,
   rewardSymbol,
   status,
   ctaHref,
@@ -49,25 +52,14 @@ export const Task: React.FC<TaskProps> = ({
         <div className="text-sm text-neutral-content">{description}</div>
 
         {/* footer */}
-        <div className="flex gap-2 items-center">
-          <Link href={ctaHref}>
+        <div className="flex w-full gap-2 items-center">
+          <Link href={ctaHref} className="flex flex-1">
             <button className="flex-1 rounded-lg bg-primary py-1.5 px-3 text-primary-content">
               {ctaText}
             </button>
           </Link>
 
-          {/* example badge */}
-          <div className="flex items-center gap-1">
-            {status === "completed" && (
-              <span className="text-success">✓ انجام شد</span>
-            )}
-            {status === "pending" && (
-              <span className="text-warning">در حال انجام</span>
-            )}
-            {status === "expired" && (
-              <span className="text-error">منقضی شده</span>
-            )}
-          </div>
+          <EnergyDisplay energy={energy} />
         </div>
       </div>
     </div>

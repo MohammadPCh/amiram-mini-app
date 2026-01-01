@@ -1,6 +1,6 @@
 interface EnergyDisplayProps {
   energy?: number;
-  loading: boolean;
+  loading?: boolean;
 }
 
 const EnergyDisplay = ({ energy, loading }: EnergyDisplayProps) => {
