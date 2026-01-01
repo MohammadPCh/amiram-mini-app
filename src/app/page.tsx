@@ -10,6 +10,7 @@ import { WheelBanner } from "@/components/WheelBanner";
 import SpinWheel from "@/components/SpinWheel";
 import { useWalletInfo } from "@reown/appkit/react";
 import { useTelegramUser } from "@/hooks/useTelegramUser";
+import { MissionList } from "@/components/MissionList";
 
 export default function Home() {
   // Simulate work to show the global loading UI
@@ -25,12 +26,11 @@ export default function Home() {
         <div className="text-2xl font-bold pb-4 border-primary border-b-2 text-center">
           ماموریت بیت
         </div>
-        <Task />
+        {/* <Task /> */}
+        <MissionList />
         <WheelBanner />
       </div>
-      <div className="wrap-anywhere">
-        {initData}
-      </div>
+      <div className="wrap-anywhere">{initData}</div>
       {/* <div className="p-2">
         <h1>AppKit Wagmi Next.js App Router Example</h1>
         {JSON.stringify(walletInfo)}

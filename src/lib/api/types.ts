@@ -131,3 +131,32 @@ export type TeamMembersResponse = {
   members: TeamMember[];
   pagination: Pagination;
 };
+
+export type Mission = {
+  id: number;
+  title: string;
+  description: string;
+  type: string;
+  reward_energy: number;
+  reward_amount: number;
+  expire_at: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type MissionsListResponse = {
+  missions: Mission[];
+  pagination: Pagination;
+};
+
+export type MissionStatusResponse = {
+  status: string; // "pending" | "done" | ...
+};
+
+export type MissionSubmitRequest = {
+  status: string; // "done" | "pending"
+};
+
+export type MissionSubmitResponse = {
+  status: string;
+};

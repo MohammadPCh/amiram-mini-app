@@ -9,7 +9,7 @@ import type {
 } from "@/lib/api/types";
 import { energy } from "viem/chains";
 
-const BE_DISABLED = false;
+export const BE_DISABLED = false;
 
 function isoDaysAgo(days: number) {
   const d = new Date();
@@ -150,6 +150,9 @@ export const beKeys = {
   inviteLink: ["be", "team", "invite-link"] as const,
   teamMembers: (page: number) => ["be", "team", "members", { page }] as const,
   wallet: ["be", "user", "wallet"] as const,
+  missions: (page: number) => ["be", "missions", { page }] as const,
+  missionStatus: (missionId: number) =>
+    ["be", "missions", missionId, "status"] as const,
 };
 
 export function useMe() {
@@ -369,5 +372,48 @@ export function useTeamMembers(params?: { page?: number }) {
     enabled: !BE_DISABLED,
     initialData: MOCK_TEAM_MEMBERS,
     staleTime: BE_DISABLED ? Infinity : 0,
+  });
+}
+
+export function useMissions(params?: { page?: number }) {
+  const page = params?.page ?? 1;
+
+  return useQuery({
+    queryKey: beKeys.missions(page),
+    queryFn: () => be.missions.list({ page }),
+    enabled: !BE_DISABLED,
+    staleTime: BE_DISABLED ? Infinity : 0,
+  });
+}
+
+export function useMissionStatus(missionId: number, enabled = true) {
+  return useQuery({
+    queryKey: beKeys.missionStatus(missionId),
+    queryFn: () => be.missions.status(missionId),
+    enabled: enabled && !BE_DISABLED,
+    staleTime: BE_DISABLED ? Infinity : 0,
+  });
+}
+
+export function useSubmitMission() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: { missionId: number; status: string }) => {
+      if (!BE_DISABLED)
+        return await be.missions.submit(params.missionId, {
+          status: params.status,
+        });
+
+      return { status: params.status }; // mock
+    },
+
+    onSuccess: (_, { missionId, status }) => {
+      // update mission status cache
+      qc.setQueryData(beKeys.missionStatus(missionId), { status });
+
+      // refetch lists
+      qc.invalidateQueries({ queryKey: ["be", "missions"] });
+    },
   });
 }

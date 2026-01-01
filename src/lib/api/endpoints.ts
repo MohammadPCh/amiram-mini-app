@@ -8,6 +8,10 @@ import type {
   CheckoutResponse,
   EnergyResponse,
   InviteLinkResponse,
+  MissionsListResponse,
+  MissionStatusResponse,
+  MissionSubmitRequest,
+  MissionSubmitResponse,
   RewardClaimResponse,
   RewardsListResponse,
   TeamLevelResponse,
@@ -79,5 +83,21 @@ export const be = {
       const page = params.page ?? 1;
       return apiFetch<TeamMembersResponse>(`/api/team/members?page=${page}`);
     },
+  },
+
+  missions: {
+    list: (params: { page?: number }) => {
+      const page = params.page ?? 1;
+      return apiFetch<MissionsListResponse>(`/api/missions?page=${page}`);
+    },
+
+    status: (missionId: number) =>
+      apiFetch<MissionStatusResponse>(`/api/missions/${missionId}/status`),
+
+    submit: (missionId: number, req: MissionSubmitRequest) =>
+      apiFetch<MissionSubmitResponse>(`/api/missions/${missionId}/submit`, {
+        method: "POST",
+        body: JSON.stringify(req),
+      }),
   },
 };
