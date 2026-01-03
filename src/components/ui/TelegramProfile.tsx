@@ -6,13 +6,26 @@ interface TelegramProfileProps {
   user?: { username?: string; photo_url?: string } | null;
   loading: boolean;
   isTelegram: boolean;
+  initData?: string;
 }
 
 const TelegramProfile = ({
   user,
   loading,
   isTelegram,
+  initData,
 }: TelegramProfileProps) => {
+  const handleDoubleClick = async () => {
+    if (!initData) return;
+
+    try {
+      await navigator.clipboard.writeText(initData);
+      alert("Init data copied to clipboard");
+    } catch (err) {
+      alert("Failed to copy");
+    }
+  };
+
   if (isTelegram && loading) {
     return (
       <>
@@ -24,7 +37,14 @@ const TelegramProfile = ({
 
   return (
     <>
-      <p className="text-xs font-bold">{user?.username}</p>
+      <p
+        className="text-xs font-bold cursor-pointer select-text"
+        onDoubleClick={handleDoubleClick}
+        title="Double click to copy initData"
+      >
+        {user?.username}
+      </p>
+
       <Link href="/me">
         <img
           src={user?.photo_url || "/images/face-man.svg"}

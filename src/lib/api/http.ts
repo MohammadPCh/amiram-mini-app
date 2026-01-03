@@ -14,7 +14,7 @@ export class ApiError extends Error {
 function getBaseUrl(): string {
   // Postman doc examples are like: http://localhost/api/...
   const base = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
-  return "http://localhost";
+  return "https://users-bot-staging.amirambit.com";
 }
 
 function buildUrl(path: string): string {
