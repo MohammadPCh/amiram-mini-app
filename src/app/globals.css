@@ -2,6 +2,12 @@
 @import "tailwindcss/preflight";
 @import "tailwindcss/utilities";
 
+@layer utilities {
+  .glass {
+    @apply bg-white/10 dark:bg-black/20 backdrop-blur-lg border border-white/20 dark:border-white/10 shadow-xl;
+  }
+}
+
 @theme {
   /* Semantic colors */
   --color-primary: #F5CF31;

@@ -1,47 +1,92 @@
 "use client";
 
+import { Level } from "@/lib/api/types";
+import clsx from "clsx";
 import Image from "next/image";
 import React from "react";
 
-export enum Level {
-  Gold = 1,
-  Silver = 2,
-  Bronze = 3,
-}
-
-const data = {
-  [Level.Gold]: {
-    title: "طلایی",
-    multiplier: 3,
-    colorClass: "text-yellow-400",
-  },
-  [Level.Silver]: {
-    title: "نقره‌ای",
-    multiplier: 2,
-    colorClass: "text-gray-400",
-  },
-  [Level.Bronze]: {
-    title: "برنزی",
-    multiplier: 1,
-    colorClass: "text-yellow-800",
-  },
+const mapEnToFa = (enLevelName: string) => {
+  switch (enLevelName) {
+    case "boronzi":
+      return "برنزی";
+    case "noghrei":
+      return "نقره‌ای";
+    case "Talai":
+      return "طلایی";
+    default:
+      return enLevelName;
+  }
 };
 
-const LevelCard = ({ level }: { level: Level }) => {
+const mapIdToColor = (id: number) => {
+  switch (id) {
+    case 1:
+      return "text-yellow-800";
+    case 2:
+      return "text-gray-400";
+    case 3:
+      return "text-yellow-400";
+    default:
+      return "text-gray-400";
+  }
+};
+
+const mapIdToImage = (id: number) => {
+  switch (id) {
+    case 1:
+      return `/images/levels/3.png`;
+    case 2:
+      return `/images/levels/2.png`;
+    case 3:
+      return `/images/levels/1.png`;
+    default:
+      return `/images/levels/3.png`;
+  }
+};
+
+const LevelCard = ({ level, loaded }: { level?: Level; loaded?: boolean }) => {
+  if (!loaded) {
+    <div className="mx-2.5 rounded-b-2xl border-2 border-primary border-t-0 flex items-center glass animate-pulse">
+      {/* Image skeleton */}
+      <div className="w-12 h-12 bg-neutral-700 rounded-full" />
+
+      {/* Level text skeleton */}
+      <div className="flex gap-1 items-center justify-end text-sm ml-2">
+        <div className="w-10 h-4 bg-neutral-700 rounded" /> {/* "سطح:" */}
+        <div className="w-16 h-4 bg-neutral-600 rounded" /> {/* Level name */}
+      </div>
+
+      {/* SVG placeholder */}
+      <div className="w-[117px] h-5 bg-neutral-700 rounded ml-2" />
+
+      {/* Coefficient and rewards skeleton */}
+      <div className="flex gap-1 items-center justify-end text-xs ml-2">
+        <div className="w-8 h-3 bg-neutral-700 rounded" /> {/* "ضریب:" */}
+        <div className="w-10 h-6 bg-neutral-600 rounded font-extrabold text-2xl" />{" "}
+        {/* coefficient */}
+        <div className="w-12 h-3 bg-neutral-700 rounded" /> {/* "جوایز" */}
+      </div>
+    </div>;
+  }
+
+  if (!level) return null;
+
   return (
-    <div className="mx-2.5 rounded-b-2xl border-2 border-primary border-t-0 flex items-center bg-base-100">
+    <div className="mx-2.5 rounded-b-2xl border-2 border-primary border-t-0 flex items-center glass px-4">
       <Image
-        src={`/images/levels/${level}.png`}
-        alt={`Level ${level}`}
+        src={mapIdToImage(level.id)}
+        alt={`Level ${level.name}`}
         width={48}
         height={48}
       />
       <div className="flex gap-1 items-center justify-end text-sm">
         <span className="text-neutral-content">سطح:</span>
-        <span className={data[level].colorClass}>{data[level].title}</span>
+        <span className={clsx(mapIdToColor(level.id), "font-bold text-lg")}>
+          {mapEnToFa(level.name)}
+        </span>
       </div>
       <svg
-        width="117"
+        className="flex-1 mx-2" // <-- this makes it grow
         height="20"
         viewBox="0 0 117 20"
         fill="none"
@@ -54,8 +99,12 @@ const LevelCard = ({ level }: { level: Level }) => {
       </svg>
       <div className="flex gap-1 items-center justify-end text-xs">
         <span className="text-neutral-content">ضریب:</span>
-        <span className={`font-extrabold text-2xl ${data[level].colorClass}`}>
-          {data[level].multiplier}X
+        <span
+          className={`font-extrabold text-lg ${mapIdToColor(
+            level.coefficient
+          )}`}
+        >
+          {level.coefficient}X
         </span>
         <span className="text-neutral-content">جوایز</span>
       </div>
