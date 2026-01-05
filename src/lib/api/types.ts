@@ -132,6 +132,8 @@ export type TeamMembersResponse = {
   pagination: Pagination;
 };
 
+export type Status = "pending" | "done" | "failed" | "expired";
+
 export type Mission = {
   id: number;
   title: string;
@@ -142,7 +144,7 @@ export type Mission = {
   expire_at: string;
   created_at: string;
   updated_at: string;
-  status?: string;
+  status?: Status;
 };
 
 export type MissionsListResponse = {
@@ -151,13 +153,13 @@ export type MissionsListResponse = {
 };
 
 export type MissionStatusResponse = {
-  status: string; // "pending" | "done" | ...
+  status: Status; // "pending" | "done" | ...
 };
 
 export type MissionSubmitRequest = {
-  status: string; // "done" | "pending"
+  status: Status; // "done" | "pending"
 };
 
 export type MissionSubmitResponse = {
-  status: string;
+  status: Status;
 };

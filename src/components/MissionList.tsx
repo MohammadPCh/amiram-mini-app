@@ -48,6 +48,7 @@ export function MissionList() {
           if (hasNextPage) fetchNextPage();
         }}
         overscan={200}
+        style={{ overflowX: "hidden" }}
         itemContent={(_, item) => {
           if ("type" in item && item.type === "banner") {
             return (
@@ -59,18 +60,7 @@ export function MissionList() {
           const mission = item as Mission;
           return (
             <div className="p-2">
-              <Task
-                title={mission.title}
-                description={mission.description}
-                reward={mission.reward_amount}
-                energy={mission.reward_energy}
-                rewardSymbol="usdt"
-                status={mission.status}
-                ctaHref={`/missions/${mission.id}`}
-                ctaText={
-                  mission.status === "completed" ? "مشاهده" : "شروع ماموریت"
-                }
-              />
+              <Task mission={mission} />
             </div>
           );
         }}

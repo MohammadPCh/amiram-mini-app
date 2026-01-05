@@ -1,47 +1,118 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import clsx from "clsx";
 import EnergyDisplay from "./ui/EnergyDisplay";
+import { Mission } from "@/lib/api/types";
 
 type TaskProps = {
-  title: string;
-  description: string;
-  reward: number;
-  energy: number;
-  rewardSymbol: string;
-  status?: string;
-  ctaHref: string;
-  ctaText: string;
+  mission: Mission;
+  ctaHref?: string;
+  ctaText?: string;
 };
 
 export const Task: React.FC<TaskProps> = ({
-  title,
-  description,
-  reward,
-  energy,
-  rewardSymbol,
-  status,
-  ctaHref,
-  ctaText,
+  mission,
+  ctaHref = "#",
+  ctaText = "انجام",
 }) => {
-  return (
-    <div className="flex items-end">
-      <div className="min-w-6 min-h-6 rounded-lg bg-neutral"></div>
+  const {
+    title,
+    description,
+    reward_amount,
+    reward_energy,
+    status = "pending",
+    expire_at,
+    type,
+  } = mission;
 
-      <div className="min-w-6 min-h-6 bg-neutral relative overflow-hidden">
-        <div className="absolute -top-6 left-0 w-12 h-12 bg-base-200 rounded-full"></div>
+  const isCompleted = status === "done";
+  const isFailed = status === "failed";
+
+  const isExpired = new Date(expire_at).getTime() < Date.now();
+
+  const isEnergyBonus = reward_energy > reward_amount;
+
+  return (
+    <div className="flex gap-3 items-end relative">
+      {/* checkbox */}
+      <div
+        className={clsx(
+          "w-7 h-7 rounded-sm border flex items-center justify-center",
+          {
+            "bg-success border-success": isCompleted,
+            "bg-red-400 border-red-700": isFailed || isExpired,
+            "bg-neutral border-neutral-content":
+              !isCompleted && !isFailed && !isExpired,
+          }
+        )}
+      >
+        {isCompleted && (
+          <svg
+            viewBox="0 0 20 20"
+            className="w-5 h-5 text-success-content fill-current"
+          >
+            <path d="M7.629 13.314l-3.59-3.59L2.5 11.264l5.129 5.129L17.5 6.522l-1.539-1.539z" />
+          </svg>
+        )}
+
+        {(isFailed || isExpired) && (
+          <svg
+            viewBox="0 0 20 20"
+            className="w-5 h-5 text-red-900 stroke-current"
+          >
+            <line
+              x1="4"
+              y1="10"
+              x2="16"
+              y2="10"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        )}
       </div>
 
-      <div className="bg-neutral rounded-2xl rounded-br-none p-4 flex flex-col gap-4 w-full">
+      {/* card */}
+      <div
+        className={clsx(
+          "bg-neutral rounded-2xl rounded-br-none p-4 flex flex-col gap-3 w-full relative overflow-visible",
+          {
+            "border-primary border-2": isEnergyBonus,
+            "opacity-50": isFailed || isExpired,
+          }
+        )}
+      >
+        {/* energy lightning badge */}
+        {isEnergyBonus && (
+          <div className="absolute -left-3 -top-3">
+            <img
+              src="/images/icons/energy.svg"
+              width={32}
+              height={44}
+              alt="energy"
+            />
+          </div>
+        )}
+
         {/* header */}
         <div className="flex items-center gap-2">
-          <p className="text-primary">{title}</p>
+          <p
+            className={clsx("font-bold", {
+              "text-success": isCompleted,
+              "text-red-400": isFailed || isExpired,
+              "text-primary": !isCompleted && !isFailed && !isExpired,
+            })}
+          >
+            {title}
+          </p>
 
+          {/* reward coin */}
           <div className="flex gap-1 items-center justify-end flex-1">
-            <div className="font-bold text-[#50AF95] pt-1">{reward}</div>
+            <div className="font-bold text-[#50AF95] pt-1">{reward_amount}</div>
 
             <Image
-              src={`/images/coins/${rewardSymbol}.svg`}
+              src={`/images/coins/usdt.svg`}
               alt="Coin"
               width={18}
               height={18}
@@ -49,17 +120,42 @@ export const Task: React.FC<TaskProps> = ({
           </div>
         </div>
 
-        <div className="text-sm text-neutral-content">{description}</div>
+        <div className="text-sm text-neutral-content leading-6">
+          {description}
+        </div>
 
-        {/* footer */}
+        {/* footer actions */}
         <div className="flex w-full gap-2 items-center">
-          <Link href={ctaHref} className="flex flex-1">
-            <button className="flex-1 rounded-lg bg-primary py-1.5 px-3 text-primary-content">
-              {ctaText}
+          {isCompleted && (
+            <button className="text-success bg-base-100 flex-1 rounded-lg py-1.5 px-3 text-center">
+              انجام شد :)
             </button>
-          </Link>
+          )}
 
-          <EnergyDisplay energy={energy} />
+          {status === "pending" && !isExpired && (
+            <Link href={ctaHref} className="flex flex-1">
+              <button className="flex-1 rounded-lg bg-primary py-1.5 px-3 text-primary-content">
+                {ctaText}
+              </button>
+            </Link>
+          )}
+
+          {isFailed && (
+            <button className="text-error bg-base-100 flex-1 rounded-lg py-1.5 px-3">
+              انجام نشد
+            </button>
+          )}
+
+          {isExpired && (
+            <button
+              className="text-red-500 bg-base-100 flex-1 rounded-lg py-1.5 px-3"
+              disabled
+            >
+              تمام شد ):
+            </button>
+          )}
+
+          <EnergyDisplay energy={reward_energy} />
         </div>
       </div>
     </div>

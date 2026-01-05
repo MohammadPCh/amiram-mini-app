@@ -2,8 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { be } from "@/lib/api/endpoints";
 import type {
   CheckoutRequest,
+  Mission,
   Reward,
   RewardsListResponse,
+  Status,
   TeamMembersResponse,
   WheelConfigResponse,
 } from "@/lib/api/types";
@@ -107,6 +109,69 @@ const MOCK_TEAM_LEVELS = {
     { id: 3, name: "خفن", coefficient: 3, min_score: 3600 },
   ],
 };
+
+export const MOCK_MISSIONS: Mission[] = [
+  {
+    id: 1,
+    title: "Complete Profile",
+    description: "Add your name, avatar, and bio to complete your profile.",
+    type: "onboarding",
+    reward_energy: 10,
+    reward_amount: 100,
+    expire_at: "2026-02-01T23:59:59.000Z",
+    created_at: "2026-01-05T10:00:00.000Z",
+    updated_at: "2026-01-05T10:00:00.000Z",
+    status: "pending",
+  },
+  {
+    id: 2,
+    title: "Invite a Friend",
+    description: "Invite one new user and have them sign up successfully.",
+    type: "social",
+    reward_energy: 20,
+    reward_amount: 12,
+    expire_at: "2026-03-01T23:59:59.000Z",
+    created_at: "2026-01-05T11:00:00.000Z",
+    updated_at: "2026-01-05T11:00:00.000Z",
+    status: "done",
+  },
+  {
+    id: 3,
+    title: "Daily Login",
+    description: "Log into the app today to receive a reward.",
+    type: "daily",
+    reward_energy: 5,
+    reward_amount: 50,
+    expire_at: "2026-01-06T23:59:59.000Z",
+    created_at: "2026-01-05T12:00:00.000Z",
+    updated_at: "2026-01-05T12:00:00.000Z",
+    status: "failed",
+  },
+  {
+    id: 4,
+    title: "First Purchase",
+    description: "Make your first in-app purchase.",
+    type: "transaction",
+    reward_energy: 30,
+    reward_amount: 500,
+    expire_at: "2026-04-01T23:59:59.000Z",
+    created_at: "2026-01-05T13:00:00.000Z",
+    updated_at: "2026-01-05T13:00:00.000Z",
+    status: "pending",
+  },
+  {
+    id: 5,
+    title: "Watch Tutorial",
+    description: "Watch the getting-started tutorial video.",
+    type: "education",
+    reward_energy: 8,
+    reward_amount: 80,
+    expire_at: "2026-02-15T23:59:59.000Z",
+    created_at: "2026-01-05T14:00:00.000Z",
+    updated_at: "2026-01-05T14:00:00.000Z",
+    status: "done",
+  },
+];
 
 const MOCK_INVITE = {
   invite_link: "https://t.me/AmiramTest1bot?start=AB192952011",
@@ -399,7 +464,7 @@ export function useSubmitMission() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: { missionId: number; status: string }) => {
+    mutationFn: async (params: { missionId: number; status: Status }) => {
       if (!BE_DISABLED)
         return await be.missions.submit(params.missionId, {
           status: params.status,

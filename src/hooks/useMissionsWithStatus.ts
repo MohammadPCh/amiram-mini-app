@@ -1,13 +1,17 @@
 import { useQueries, useQueryClient } from "@tanstack/react-query";
-import { BE_DISABLED, beKeys, useMissions, useSubmitMission } from "./be";
+import {
+  BE_DISABLED,
+  beKeys,
+  MOCK_MISSIONS,
+  useMissions,
+  useSubmitMission,
+} from "./be";
 import { be } from "@/lib/api/endpoints";
 
 export function useMissionsWithStatus(params?: { page?: number }) {
   const page = params?.page ?? 1;
 
   const missionsQuery = useMissions({ page });
-
-  const qc = useQueryClient();
 
   const submitMutation = useSubmitMission();
 
@@ -21,7 +25,7 @@ export function useMissionsWithStatus(params?: { page?: number }) {
   });
 
   const missionsWithStatus =
-    missionsQuery.data?.missions.map((m, i) => ({
+    MOCK_MISSIONS.map((m, i) => ({
       ...m,
       status: statuses[i]?.data?.status ?? "unknown",
     })) ?? [];
