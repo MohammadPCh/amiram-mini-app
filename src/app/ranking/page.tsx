@@ -13,7 +13,7 @@ export default function RankingPage() {
   );
 
   return (
-    <div className="py-2.5 px-8 flex flex-col items-center">
+    <div className="w-full py-2.5 flex flex-col items-center">
       <CompetitionInfo />
       <LeaderBoardCard title="جدول جوایز">
         <TabsBar selectedTab={selectedTab} onChange={setSelectedTab} />

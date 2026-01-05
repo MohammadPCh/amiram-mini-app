@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { useClaimReward, useRewards } from "@/hooks/be";
 
@@ -14,7 +16,19 @@ const RewardsBox = () => {
         {isLoading ? (
           <div className="text-center text-sm opacity-70">در حال دریافت...</div>
         ) : rewards.length === 0 ? (
-          <div className="text-center text-sm opacity-70">جایزه‌ای برای دریافت ندارید.</div>
+          <div className="p-7 flex flex-col items-center">
+            <Image
+              src="/images/robot/sad.svg"
+              alt="sad robot"
+              width={100}
+              height={100}
+              className="mx-auto"
+            />
+            <hr className="w-full border-primary" />
+            <div className="text-center text-sm opacity-70 mt-2">
+              جایزه‌ای برای دریافت ندارید.
+            </div>
+          </div>
         ) : (
           rewards.map((item) => (
             <RewardItem
@@ -65,14 +79,26 @@ const RewardItem = ({
         <div className="absolute -top-6 left-0 w-12 h-12 bg-base-100 rounded-full"></div>
       </div>
       <div className="flex flex-col gap-1 flex-1">
-        <div className="text-sm text-neutral-700">{dateTime.toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+        <div className="text-sm text-neutral-700">
+          {dateTime.toLocaleDateString("fa-IR", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </div>
         <div className="bg-neutral rounded-2xl rounded-br-none p-4 flex flex-col gap-4">
           <div className="flex items-center gap-2">
             <p className="text-[#50AF95] font-bold">{title}</p>
             <div className="flex gap-1 items-center justify-end flex-1">
               <div className="font-bold text-[#50AF95] pt-1">{amount}</div>
               <Image
-                src={currency?.toUpperCase() === "USDT" ? "/images/coins/usdt.svg" : "/images/coins/usdt.svg"}
+                src={
+                  currency?.toUpperCase() === "USDT"
+                    ? "/images/coins/usdt.svg"
+                    : "/images/coins/usdt.svg"
+                }
                 alt="Coin"
                 width={18}
                 height={18}
