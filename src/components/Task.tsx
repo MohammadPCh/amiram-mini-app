@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import clsx from "clsx";
 import EnergyDisplay from "./ui/EnergyDisplay";
 import { Mission } from "@/lib/api/types";
+import { useSubmitMission } from "@/hooks/be";
 
 type TaskProps = {
   mission: Mission;
@@ -25,6 +26,8 @@ export const Task: React.FC<TaskProps> = ({
     expire_at,
     type,
   } = mission;
+  const submitMutation = useSubmitMission();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const isCompleted = status === "done";
   const isFailed = status === "failed";
@@ -32,6 +35,33 @@ export const Task: React.FC<TaskProps> = ({
   const isExpired = new Date(expire_at).getTime() < Date.now();
 
   const isEnergyBonus = reward_energy > reward_amount;
+
+  const handleLinkMissionClick = () => {
+    if (!ctaHref) return;
+
+    window.open(ctaHref, "_blank");
+
+    // save in localStorage
+    localStorage.setItem(`linkMission_${mission.id}`, Date.now().toString());
+
+    timerRef.current = setTimeout(() => {
+      submitMutation.mutateAsync({ missionId: mission.id, status: "done" });
+      localStorage.removeItem(`linkMission_${mission.id}`);
+    }, 5000); // 30 seconds
+  };
+
+  // run on mount to check missed missions
+  useEffect(() => {
+    const timestamp = localStorage.getItem(`linkMission_${mission.id}`);
+    if (timestamp) {
+      const elapsed = Date.now() - Number(timestamp);
+      const remaining = Math.max(5000 - elapsed, 0);
+      timerRef.current = setTimeout(() => {
+        submitMutation.mutateAsync({ missionId: mission.id, status: "done" });
+        localStorage.removeItem(`linkMission_${mission.id}`);
+      }, remaining);
+    }
+  }, [mission.id, submitMutation]);
 
   return (
     <div className="flex gap-3 items-end relative">
@@ -133,11 +163,20 @@ export const Task: React.FC<TaskProps> = ({
           )}
 
           {status === "pending" && !isExpired && (
-            <Link href={ctaHref} className="flex flex-1">
-              <button className="flex-1 rounded-lg bg-primary py-1.5 px-3 text-primary-content">
-                {ctaText}
-              </button>
-            </Link>
+            <>
+              {type === "link" ? (
+                <button
+                  onClick={handleLinkMissionClick}
+                  className="flex-1 rounded-lg bg-primary py-1.5 px-3 text-primary-content"
+                >
+                  {ctaText}
+                </button>
+              ) : (
+                <button className="flex-1 rounded-lg bg-primary py-1.5 px-3 text-primary-content">
+                  {ctaText}
+                </button>
+              )}
+            </>
           )}
 
           {isFailed && (

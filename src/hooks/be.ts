@@ -115,7 +115,7 @@ export const MOCK_MISSIONS: Mission[] = [
     id: 1,
     title: "Complete Profile",
     description: "Add your name, avatar, and bio to complete your profile.",
-    type: "onboarding",
+    type: "link",
     reward_energy: 10,
     reward_amount: 100,
     expire_at: "2026-02-01T23:59:59.000Z",
