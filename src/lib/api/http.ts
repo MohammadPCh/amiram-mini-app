@@ -1,6 +1,8 @@
 import { getStoredTokens, setStoredTokens } from "./storage";
 import type { JwtTokens, RefreshResponse } from "./types";
 
+let refreshPromise: Promise<JwtTokens> | null = null;
+
 export class ApiError extends Error {
   status: number;
   body: unknown;
@@ -33,19 +35,31 @@ async function parseJsonSafely(res: Response): Promise<unknown> {
   }
 }
 
-async function refreshAccessToken(tokens: JwtTokens): Promise<JwtTokens> {
-  const res = await fetch(buildUrl("/api/auth/refresh"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh_token: tokens.refresh_token }),
-  });
-  const body = (await parseJsonSafely(res)) as RefreshResponse | unknown;
-  if (!res.ok) {
-    throw new ApiError("Failed to refresh token", res.status, body);
+async function refreshAccessTokenLocked(tokens: JwtTokens): Promise<JwtTokens> {
+  // If refresh already happening → reuse it
+  if (refreshPromise) {
+    return refreshPromise;
   }
-  const next = (body as RefreshResponse).tokens;
-  setStoredTokens(next);
-  return next;
+  refreshPromise = (async () => {
+    try {
+      const res = await fetch(buildUrl("/api/auth/refresh"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh_token: tokens.refresh_token }),
+      });
+      const body = (await parseJsonSafely(res)) as RefreshResponse | unknown;
+      if (!res.ok) {
+        throw new ApiError("Failed to refresh token", res.status, body);
+      }
+      const next = (body as RefreshResponse).tokens;
+      setStoredTokens(next);
+      return next;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
 }
 
 export async function apiFetch<T>(
@@ -76,7 +90,7 @@ export async function apiFetch<T>(
   let res = await doRequest();
   if (auth && res.status === 401 && tokens?.refresh_token) {
     try {
-      tokens = await refreshAccessToken(tokens);
+      tokens = await refreshAccessTokenLocked(tokens);
       res = await doRequest(tokens);
     } catch (e) {
       setStoredTokens(null);
