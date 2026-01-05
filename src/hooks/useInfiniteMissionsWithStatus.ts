@@ -6,7 +6,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { be } from "@/lib/api/endpoints";
-import { beKeys, MOCK_MISSIONS, useSubmitMission } from "./be";
+import { beKeys, useSubmitMission } from "./be";
 import { MissionsListResponse } from "@/lib/api/types";
 import { useMemo } from "react";
 
@@ -44,7 +44,7 @@ export function useInfiniteMissionsWithStatus() {
   });
 
   const missionsWithStatus = useMemo(() => {
-    return MOCK_MISSIONS.map((m, i) => {
+    return missions.map((m, i) => {
       const statusData = statuses[i]?.data;
       if (statusData) {
         return { ...m, status: statusData.status };
