@@ -1,69 +1,250 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { be } from '@/lib/api/endpoints'
-import type { CheckoutRequest, Reward, RewardsListResponse, TeamMembersResponse, WheelConfigResponse } from '@/lib/api/types'
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { be } from "@/lib/api/endpoints";
+import type {
+  CheckoutRequest,
+  Mission,
+  Reward,
+  RewardsListResponse,
+  Status,
+  TeamMembersResponse,
+  WheelConfigResponse,
+} from "@/lib/api/types";
+import { energy } from "viem/chains";
 
-const BE_DISABLED = true;
+export const BE_DISABLED = false;
 
 function isoDaysAgo(days: number) {
-  const d = new Date()
-  d.setDate(d.getDate() - days)
-  return d.toISOString()
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  return d.toISOString();
 }
 
-const MOCK_BALANCE = 70
-const MOCK_WALLET = '0x4C9183f5bA34046E5E35220EDA478450D044c2ab'
+const MOCK_BALANCE = 70;
+const MOCK_WALLET = "0x4C9183f5bA34046E5E35220EDA478450D044c2ab";
 
 const MOCK_REWARDS: Reward[] = [
-  { id: 31, type: 'volume', amount: 0.6, currency: 'USDT', status: 'pending', created_at: isoDaysAgo(2) },
-  { id: 29, type: 'volume', amount: 0.3, currency: 'USDT', status: 'pending', created_at: isoDaysAgo(3) },
-  { id: 27, type: 'invite', amount: 5, currency: 'USDT', status: 'pending', created_at: isoDaysAgo(5) },
-]
+  {
+    id: 31,
+    type: "volume",
+    amount: 0.6,
+    currency: "USDT",
+    status: "pending",
+    created_at: isoDaysAgo(2),
+  },
+  {
+    id: 29,
+    type: "volume",
+    amount: 0.3,
+    currency: "USDT",
+    status: "pending",
+    created_at: isoDaysAgo(3),
+  },
+  {
+    id: 27,
+    type: "invite",
+    amount: 5,
+    currency: "USDT",
+    status: "pending",
+    created_at: isoDaysAgo(5),
+  },
+];
 
 const MOCK_WHEEL_CONFIG: WheelConfigResponse = {
   configs: [
-    { id: 12, title: 'energy1', reward_amount: 200, weight: 50, reward_type: 'energy', status: 'active' },
-    { id: 13, title: 'energy2', reward_amount: 100, weight: 70, reward_type: 'energy', status: 'active' },
-    { id: 14, title: 'energy3', reward_amount: 30, weight: 500, reward_type: 'energy', status: 'active' },
-    { id: 15, title: 'money1', reward_amount: 20, weight: 50, reward_type: 'USDT', status: 'active' },
-    { id: 16, title: 'money2', reward_amount: 200, weight: 10, reward_type: 'USDT', status: 'active' },
+    {
+      id: 12,
+      title: "energy1",
+      reward_amount: 200,
+      weight: 50,
+      reward_type: "energy",
+      status: "active",
+    },
+    {
+      id: 13,
+      title: "energy2",
+      reward_amount: 100,
+      weight: 70,
+      reward_type: "energy",
+      status: "active",
+    },
+    {
+      id: 14,
+      title: "energy3",
+      reward_amount: 30,
+      weight: 500,
+      reward_type: "energy",
+      status: "active",
+    },
+    {
+      id: 15,
+      title: "money1",
+      reward_amount: 20,
+      weight: 50,
+      reward_type: "USDT",
+      status: "active",
+    },
+    {
+      id: 16,
+      title: "money2",
+      reward_amount: 200,
+      weight: 10,
+      reward_type: "USDT",
+      status: "active",
+    },
   ],
-}
+};
 
 const MOCK_TEAM_LEVEL = {
   total_score: 3600,
   members_count: 2,
-  level: { id: 3, name: 'خفن', coefficient: 3, min_score: 3600 },
+  level: { id: 3, name: "خفن", coefficient: 3, min_score: 3600 },
   required_score: 3600,
   score_needed: 0,
-}
+};
 
 const MOCK_TEAM_LEVELS = {
   levels: [
-    { id: 1, name: 'تازه وارد', coefficient: 1, min_score: 1200 },
-    { id: 2, name: 'درخشان', coefficient: 2, min_score: 2400 },
-    { id: 3, name: 'خفن', coefficient: 3, min_score: 3600 },
+    { id: 1, name: "تازه وارد", coefficient: 1, min_score: 1200 },
+    { id: 2, name: "درخشان", coefficient: 2, min_score: 2400 },
+    { id: 3, name: "خفن", coefficient: 3, min_score: 3600 },
   ],
-}
+};
 
-const MOCK_INVITE = { invite_link: 'https://t.me/AmiramTest1bot?start=AB192952011' }
+export const MOCK_MISSIONS: Mission[] = [
+  {
+    id: 1,
+    title: "Complete Profile",
+    description: "Add your name, avatar, and bio to complete your profile.",
+    type: "link",
+    reward_energy: 10,
+    reward_amount: 100,
+    expire_at: "2026-02-01T23:59:59.000Z",
+    created_at: "2026-01-05T10:00:00.000Z",
+    updated_at: "2026-01-05T10:00:00.000Z",
+    status: "pending",
+  },
+  {
+    id: 2,
+    title: "Invite a Friend",
+    description: "Invite one new user and have them sign up successfully.",
+    type: "social",
+    reward_energy: 20,
+    reward_amount: 12,
+    expire_at: "2026-03-01T23:59:59.000Z",
+    created_at: "2026-01-05T11:00:00.000Z",
+    updated_at: "2026-01-05T11:00:00.000Z",
+    status: "done",
+  },
+  {
+    id: 3,
+    title: "Daily Login",
+    description: "Log into the app today to receive a reward.",
+    type: "daily",
+    reward_energy: 5,
+    reward_amount: 50,
+    expire_at: "2026-01-06T23:59:59.000Z",
+    created_at: "2026-01-05T12:00:00.000Z",
+    updated_at: "2026-01-05T12:00:00.000Z",
+    status: "failed",
+  },
+  {
+    id: 4,
+    title: "First Purchase",
+    description: "Make your first in-app purchase.",
+    type: "transaction",
+    reward_energy: 30,
+    reward_amount: 500,
+    expire_at: "2026-04-01T23:59:59.000Z",
+    created_at: "2026-01-05T13:00:00.000Z",
+    updated_at: "2026-01-05T13:00:00.000Z",
+    status: "pending",
+  },
+  {
+    id: 5,
+    title: "Watch Tutorial",
+    description: "Watch the getting-started tutorial video.",
+    type: "education",
+    reward_energy: 8,
+    reward_amount: 80,
+    expire_at: "2026-02-15T23:59:59.000Z",
+    created_at: "2026-01-05T14:00:00.000Z",
+    updated_at: "2026-01-05T14:00:00.000Z",
+    status: "done",
+  },
+];
+
+const MOCK_INVITE = {
+  invite_link: "https://t.me/AmiramTest1bot?start=AB192952011",
+};
 
 const MOCK_TEAM_MEMBERS: TeamMembersResponse = {
   members: [
-    { telegram_id: 7937770824, username: 'Amiramtests', first_name: 'Pouya', score: 30, balance: 0, energy: 0, joined_at: isoDaysAgo(1) },
-    { telegram_id: 6097494356, username: 'Jsiskg', first_name: 'Liom', score: 1830, balance: 5, energy: 4, joined_at: isoDaysAgo(30) },
+    {
+      telegram_id: 7937770824,
+      username: "Amiramtests",
+      first_name: "Pouya",
+      score: 30,
+      balance: 0,
+      energy: 0,
+      joined_at: isoDaysAgo(1),
+    },
+    {
+      telegram_id: 6097494356,
+      username: "Jsiskg",
+      first_name: "Liom",
+      score: 1830,
+      balance: 5,
+      energy: 4,
+      joined_at: isoDaysAgo(30),
+    },
   ],
   pagination: { page: 1, limit: 20, total: 2, total_pages: 1 },
-}
+};
 
 export const beKeys = {
-  balance: ['be', 'balance'] as const,
-  rewards: (page: number, status: string) => ['be', 'rewards', { page, status }] as const,
-  wheelConfig: ['be', 'wheel', 'config'] as const,
-  teamLevel: ['be', 'team', 'level'] as const,
-  teamLevels: ['be', 'team', 'levels'] as const,
-  inviteLink: ['be', 'team', 'invite-link'] as const,
-  teamMembers: (page: number) => ['be', 'team', 'members', { page }] as const,
-  wallet: ['be', 'user', 'wallet'] as const,
+  me: ["be", "me"] as const,
+  balance: ["be", "balance"] as const,
+  level: ["be", "level"],
+  levels: ["be", "levels"],
+  energy: ["be", "energy"],
+  rewards: (page: number, status: string) =>
+    ["be", "rewards", { page, status }] as const,
+  wheelConfig: ["be", "wheel", "config"] as const,
+  teamLevel: ["be", "team", "team-level"] as const,
+  teamLevels: ["be", "team", "team-levels"] as const,
+  inviteLink: ["be", "team", "invite-link"] as const,
+  teamMembers: (page: number) => ["be", "team", "members", { page }] as const,
+  wallet: ["be", "user", "wallet"] as const,
+  missions: (page: number) => ["be", "missions", { page }] as const,
+  missionStatus: (missionId: number) =>
+    ["be", "missions", missionId, "status"] as const,
+};
+
+export function useMe() {
+  return useQuery({
+    queryKey: beKeys.me,
+    queryFn: () => be.auth.me(),
+    enabled: !BE_DISABLED,
+    staleTime: BE_DISABLED ? Infinity : 0,
+  });
+}
+
+export function useLevel() {
+  return useQuery({
+    queryKey: beKeys.level,
+    queryFn: () => be.user.level(),
+    enabled: !BE_DISABLED,
+    staleTime: BE_DISABLED ? Infinity : 0,
+  });
+}
+
+export function useEnergy() {
+  return useQuery({
+    queryKey: beKeys.energy,
+    queryFn: () => be.user.energy(),
+    enabled: !BE_DISABLED,
+    staleTime: BE_DISABLED ? Infinity : 0,
+  });
 }
 
 export function useBalance() {
@@ -73,7 +254,7 @@ export function useBalance() {
     enabled: !BE_DISABLED,
     initialData: { balance: MOCK_BALANCE },
     staleTime: BE_DISABLED ? Infinity : 0,
-  })
+  });
 }
 
 export function useWallet() {
@@ -83,75 +264,97 @@ export function useWallet() {
     enabled: !BE_DISABLED,
     initialData: { wallet: MOCK_WALLET },
     staleTime: BE_DISABLED ? Infinity : 0,
-  })
+  });
 }
 
 export function useUpdateWallet() {
-  const qc = useQueryClient()
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: async (wallet: string) => {
-      if (BE_DISABLED) return { wallet }
-      return await be.user.walletUpdate(wallet)
+      if (BE_DISABLED) return { wallet };
+      return await be.user.walletUpdate(wallet);
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: beKeys.wallet })
+      qc.invalidateQueries({ queryKey: beKeys.wallet });
     },
-  })
+  });
 }
 
 export function useRewards(params?: { page?: number; status?: string }) {
-  const page = params?.page ?? 1
-  const status = params?.status ?? 'pending'
+  const page = params?.page ?? 1;
+  const status = params?.status ?? "pending";
   const initialData: RewardsListResponse = {
     rewards: MOCK_REWARDS,
-    pagination: { page: 1, limit: 5, total: MOCK_REWARDS.length, total_pages: 1 },
-  }
+    pagination: {
+      page: 1,
+      limit: 5,
+      total: MOCK_REWARDS.length,
+      total_pages: 1,
+    },
+  };
   return useQuery({
     queryKey: beKeys.rewards(page, status),
     queryFn: () => be.rewards.list({ page, status }),
     enabled: !BE_DISABLED,
     initialData,
     staleTime: BE_DISABLED ? Infinity : 0,
-  })
+  });
 }
 
 export function useClaimReward() {
-  const qc = useQueryClient()
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: async (rewardId: number) => {
-      if (!BE_DISABLED) return await be.rewards.claim(rewardId)
-      const rewardsKeyPrefix = ['be', 'rewards'] as const
+      if (!BE_DISABLED) return await be.rewards.claim(rewardId);
+      const rewardsKeyPrefix = ["be", "rewards"] as const;
       // remove claimed reward from any cached rewards lists
       qc.getQueryCache()
         .findAll({ queryKey: rewardsKeyPrefix })
         .forEach((q) => {
-          qc.setQueryData(q.queryKey, (old: RewardsListResponse | undefined) => {
-            if (!old) return old
-            return { ...old, rewards: old.rewards.filter((r) => r.id !== rewardId) }
-          })
-        })
-      return { reward: { id: rewardId, type: 'mock', amount: 0, currency: 'USDT', status: 'claimed', created_at: new Date().toISOString() }, balance: MOCK_BALANCE, energy: 0 }
+          qc.setQueryData(
+            q.queryKey,
+            (old: RewardsListResponse | undefined) => {
+              if (!old) return old;
+              return {
+                ...old,
+                rewards: old.rewards.filter((r) => r.id !== rewardId),
+              };
+            }
+          );
+        });
+      return {
+        reward: {
+          id: rewardId,
+          type: "mock",
+          amount: 0,
+          currency: "USDT",
+          status: "claimed",
+          created_at: new Date().toISOString(),
+        },
+        balance: MOCK_BALANCE,
+        energy: 0,
+      };
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: beKeys.balance })
-      qc.invalidateQueries({ queryKey: ['be', 'rewards'] })
+      qc.invalidateQueries({ queryKey: beKeys.balance });
+      qc.invalidateQueries({ queryKey: ["be", "rewards"] });
     },
-  })
+  });
 }
 
 export function useCheckout() {
-  const qc = useQueryClient()
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: async (req: CheckoutRequest) => {
-      if (!BE_DISABLED) return await be.rewards.checkout(req)
-      const nextBalance = Math.max(0, MOCK_BALANCE - req.amount)
-      qc.setQueryData(beKeys.balance, { balance: nextBalance })
-      return { balance: nextBalance, tx_hash: '0xMOCK_TX_HASH' }
+      if (!BE_DISABLED) return await be.rewards.checkout(req);
+      const nextBalance = Math.max(0, MOCK_BALANCE - req.amount);
+      qc.setQueryData(beKeys.balance, { balance: nextBalance });
+      return { balance: nextBalance, tx_hash: "0xMOCK_TX_HASH" };
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: beKeys.balance })
+      qc.invalidateQueries({ queryKey: beKeys.balance });
     },
-  })
+  });
 }
 
 export function useWheelConfig() {
@@ -161,28 +364,39 @@ export function useWheelConfig() {
     enabled: !BE_DISABLED,
     initialData: MOCK_WHEEL_CONFIG,
     staleTime: BE_DISABLED ? Infinity : 0,
-  })
+  });
 }
 
 export function useWheelSpin() {
-  const qc = useQueryClient()
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      if (!BE_DISABLED) return await be.wheel.spin()
-      const cfg = MOCK_WHEEL_CONFIG.configs[Math.floor(Math.random() * MOCK_WHEEL_CONFIG.configs.length)]
+      if (!BE_DISABLED) return await be.wheel.spin();
+      const cfg =
+        MOCK_WHEEL_CONFIG.configs[
+          Math.floor(Math.random() * MOCK_WHEEL_CONFIG.configs.length)
+        ];
       // pretend energy decreases
-      const remaining = 5 + Math.floor(Math.random() * 20)
+      const remaining = 5 + Math.floor(Math.random() * 20);
       // if USDT reward, bump mock balance a bit
-      if (cfg.reward_type !== 'energy') {
-        const current = (qc.getQueryData(beKeys.balance) as { balance: number } | undefined)?.balance ?? MOCK_BALANCE
-        qc.setQueryData(beKeys.balance, { balance: current + cfg.reward_amount })
+      if (cfg.reward_type !== "energy") {
+        const current =
+          (qc.getQueryData(beKeys.balance) as { balance: number } | undefined)
+            ?.balance ?? MOCK_BALANCE;
+        qc.setQueryData(beKeys.balance, {
+          balance: current + cfg.reward_amount,
+        });
       }
-      return { reward_type: cfg.reward_type, reward_amount: cfg.reward_amount, remaining_energy: remaining }
+      return {
+        reward_type: cfg.reward_type,
+        reward_amount: cfg.reward_amount,
+        remaining_energy: remaining,
+      };
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: beKeys.balance })
+      qc.invalidateQueries({ queryKey: beKeys.balance });
     },
-  })
+  });
 }
 
 export function useTeamLevel() {
@@ -192,7 +406,7 @@ export function useTeamLevel() {
     enabled: !BE_DISABLED,
     initialData: MOCK_TEAM_LEVEL,
     staleTime: BE_DISABLED ? Infinity : 0,
-  })
+  });
 }
 
 export function useTeamLevels() {
@@ -202,7 +416,7 @@ export function useTeamLevels() {
     enabled: !BE_DISABLED,
     initialData: MOCK_TEAM_LEVELS,
     staleTime: BE_DISABLED ? Infinity : 0,
-  })
+  });
 }
 
 export function useInviteLink() {
@@ -212,18 +426,59 @@ export function useInviteLink() {
     enabled: !BE_DISABLED,
     initialData: MOCK_INVITE,
     staleTime: BE_DISABLED ? Infinity : 0,
-  })
+  });
 }
 
 export function useTeamMembers(params?: { page?: number }) {
-  const page = params?.page ?? 1
+  const page = params?.page ?? 1;
   return useQuery({
     queryKey: beKeys.teamMembers(page),
     queryFn: () => be.team.members({ page }),
     enabled: !BE_DISABLED,
     initialData: MOCK_TEAM_MEMBERS,
     staleTime: BE_DISABLED ? Infinity : 0,
-  })
+  });
 }
 
+export function useMissions(params?: { page?: number }) {
+  const page = params?.page ?? 1;
 
+  return useQuery({
+    queryKey: beKeys.missions(page),
+    queryFn: () => be.missions.list({ page }),
+    enabled: !BE_DISABLED,
+    staleTime: BE_DISABLED ? Infinity : 0,
+  });
+}
+
+export function useMissionStatus(missionId: number, enabled = true) {
+  return useQuery({
+    queryKey: beKeys.missionStatus(missionId),
+    queryFn: () => be.missions.status(missionId),
+    enabled: enabled && !BE_DISABLED,
+    staleTime: BE_DISABLED ? Infinity : 0,
+  });
+}
+
+export function useSubmitMission() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: { missionId: number; status: Status }) => {
+      if (!BE_DISABLED)
+        return await be.missions.submit(params.missionId, {
+          status: params.status,
+        });
+
+      return { status: params.status }; // mock
+    },
+
+    onSuccess: (_, { missionId, status }) => {
+      // update mission status cache
+      qc.setQueryData(beKeys.missionStatus(missionId), { status });
+
+      // refetch lists
+      qc.invalidateQueries({ queryKey: ["be", "missions"] });
+    },
+  });
+}
